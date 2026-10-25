@@ -919,21 +919,6 @@ body.mobile-landscape .itch-btn {
      onclick="triggerAiDownloadPrompt()"
      onerror="console.error('File gambar beruang-chat.png tidak ditemukan! Cek kembali lokasi folder.');">
 
-    <!-- Pop-up Login / Setup API Key bergaya game -->
-<div class="modal" id="welcome-setup-modal" style="display: none; z-index: 99999;">
-    <div class="modal-content" style="text-align: center; max-width: 420px; border: 2px solid rgba(59, 130, 246, 0.4); background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);">
-        <h3 id="i18n-setup-title" style="font-size: 18px; color: #1e293b; margin-bottom: 6px;">Selamat Datang</h3>
-        <p id="i18n-setup-desc" style="font-size: 12px; color: #64748b; margin-bottom: 12px;">Masukkan Gemini API Key Anda:</p>
-        
-        <input type="password" id="input-initial-apikey" placeholder="Paste API Key di sini..." style="width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; margin-bottom: 8px; font-size: 13px;">
-        
-        <div style="margin-bottom: 14px; text-align: left;">
-            <a id="i18n-setup-link" href="https://aistudio.google.com/api-keys" target="_blank" rel="noopener noreferrer" style="font-size: 11px; color: #2563eb; text-decoration: underline;">Dapatkan API Key gratis di Google AI Studio ↗</a>
-        </div>
-
-        <button class="btn-primary" onclick="saveInitialApiKey()" id="i18n-setup-btn" style="width: 100%; padding: 10px; font-weight: bold; border-radius: 8px; cursor: pointer;">Mulai Chat</button>
-    </div>
-</div>
 
     <div class="bg-decor decor-1"></div>
     <div class="bg-decor decor-2"></div>
@@ -1184,11 +1169,6 @@ body.mobile-landscape .itch-btn {
 
         const i18n = {
     en: { 
-	setupTitle: "Welcome to Beruang Chat",
-        setupDesc: "Please enter your Gemini API Key to start chatting:",
-        setupPlaceholder: "Paste your API Key here (e.g. AQ...)",
-        setupBtn: "Start Chatting",
-        setupGetLink: "Get a free API Key at Google AI Studio ↗",
         placeholder: "Type a message for ", hint: "Press <b>/</b> to Open/Close Chat", 
         modalTitle: "Edit Personality", modalLabel: "Set custom traits/instructions for AI:", cancel: "Cancel", save: "Save", keyDesc: "Enter your Gemini API key to use personal quota:", typing: " is typing...", errConn: "Connection failed.",
         nameTitle: "Change Character Name", nameLabel: "Enter new character name (Fictional / Real-world):", namePlaceholder: "e.g. BeruangTidur, Vegeta, Goku, Einstein...",
@@ -1199,11 +1179,6 @@ body.mobile-landscape .itch-btn {
         keyTitle: "Gemini API Key", keyReset: "Reset", imgSelected: "Selected image", audioAuto: "🔊 Audio: Automatic"
     },
     id: { 
-	setupTitle: "Selamat Datang di Beruang Chat",
-        setupDesc: "Silakan masukkan Gemini API Key Anda untuk mulai mengobrol:",
-        setupPlaceholder: "Tempel API Key di sini (contoh: AQ...)",
-        setupBtn: "Mulai Chat",
-        setupGetLink: "Dapatkan API Key gratis di Google AI Studio ↗",
         placeholder: "Tulis pesan untuk ", hint: "Tekan <b>/</b> untuk Buka/Tutup Chat", 
         modalTitle: "Ubah Kepribadian AI", modalLabel: "Instruksi sifat/latar belakang khusus AI:", cancel: "Batal", save: "Simpan", keyDesc: "Masukkan API Key Gemini pribadi Anda:", typing: " sedang mengetik...", errConn: "Koneksi gagal.",
         nameTitle: "Ubah Nama Karakter", nameLabel: "Masukkan nama karakter baru (Fiktif / Tokoh Dunia):", namePlaceholder: "Contoh: BeruangTidur, Vegeta, Goku, Einstein...",
@@ -1214,11 +1189,6 @@ body.mobile-landscape .itch-btn {
         keyTitle: "Kunci API Gemini", keyReset: "Atur Ulang", imgSelected: "Gambar terpilih", audioAuto: "🔊 Audio: Otomatis"
     },
     ja: { 
-	setupTitle: "Beruang Chat へようこそ",
-        setupDesc: "チャットを開始するには、Gemini APIキーを入力してください：",
-        setupPlaceholder: "ここにAPIキーを貼り付け (例: AQ...)",
-        setupBtn: "チャットを開始",
-        setupGetLink: "Google AI Studio で無料のAPIキーを取得 ↗",
         placeholder: "メッセージを入力... ", hint: "<b>/</b> キーでチャットを開閉", 
         modalTitle: "AI性格設定", modalLabel: "AIのプロンプト/性格指示を入力:", cancel: "キャンセル", save: "保存", keyDesc: "Gemini APIキーを入力:", typing: " が入力中...", errConn: "接続に失敗しました。",
         nameTitle: "キャラクター名の変更", nameLabel: "新しいキャラクター名を入力（架空／実在）:", namePlaceholder: "例: BeruangTidur, 悟空, アインシュタイン...",
@@ -1229,11 +1199,6 @@ body.mobile-landscape .itch-btn {
         keyTitle: "Gemini APIキー", keyReset: "リセット", imgSelected: "選択された画像", audioAuto: "🔊 音声: 自動"
     },
     zh: { 
-	setupTitle: "欢迎来到 Beruang Chat",
-        setupDesc: "请输入您的 Gemini API 密钥以开始聊天：",
-        setupPlaceholder: "在此处粘贴 API 密钥 (例如: AQ...)",
-        setupBtn: "开始聊天",
-        setupGetLink: "在 Google AI Studio 获取免费 API 密钥 ↗",
         placeholder: "发送消息给 ", hint: "按 <b>/</b> 键打开/关闭聊天", 
         modalTitle: "编辑人设", modalLabel: "设置自定义AI性格指示:", cancel: "取消", save: "保存", keyDesc: "输入您的 Gemini API 密钥:", typing: " 正在输入...", errConn: "连接失败。",
         nameTitle: "修改角色名称", nameLabel: "输入新角色名称（虚构 / 真实人物）:", namePlaceholder: "例如: BeruangTidur, 孙悟空, 爱因斯坦...",
@@ -1244,11 +1209,6 @@ body.mobile-landscape .itch-btn {
         keyTitle: "Gemini API 密钥", keyReset: "重置", imgSelected: "已选图片", audioAuto: "🔊 语音: 自动"
     },
     es: { 
-	setupTitle: "Bienvenido a Beruang Chat",
-        setupDesc: "Por favor, introduce tu clave API de Gemini para empezar a chatear:",
-        setupPlaceholder: "Pega tu clave API aquí (ej. AQ...)",
-        setupBtn: "Empezar a Chatear",
-        setupGetLink: "Obtén una clave API gratis en Google AI Studio ↗",
         placeholder: "Escribe un mensaje para ", hint: "Presiona <b>/</b> para Abrir/Cerrar Chat", 
         modalTitle: "Editar Personalidad", modalLabel: "Instrucciones de personalidad para AI:", cancel: "Cancelar", save: "Guardar", keyDesc: "Ingrese su clave API de Gemini:", typing: " está escribiendo...", errConn: "Error de conexión.",
         nameTitle: "Cambiar Nombre del Personaje", nameLabel: "Ingrese el nuevo nombre (Ficticio / Real):", namePlaceholder: "Ej: BeruangTidur, Goku, Einstein...",
@@ -2396,7 +2356,6 @@ if (SpeechRecognition && btnMic) {
     await fetchCharacterInfoWithAI(currentName);
     updateUI();
     setInterval(updateClock, 1000);
-    checkAndShowWelcomeModal();
 });
 
 let currentAudioLang = "auto";
@@ -3172,48 +3131,6 @@ function updateMetaAndTitle(lang) {
     if (titles[lang]) {
         document.title = titles[lang];
     }
-}
-
-// Fungsi untuk memunculkan pop-up sambutan
-function checkAndShowWelcomeModal() {
-    const savedKey = localStorage.getItem('user_gemini_apikey');
-    if (!savedKey || !savedKey.trim()) {
-        const modal = document.getElementById('welcome-setup-modal');
-        if (modal) modal.style.display = 'flex';
-        updateSystemInstruction();
-    }
-}
-
-// Fungsi untuk memperbarui teks di dalam pop-up sesuai bahasa aktif (en, id, ja, zh, es)
-function updateWelcomeModalText() {
-    const t = i18n[currentLang] || i18n.id;
-    
-    const titleElem = document.getElementById('i18n-setup-title');
-    const descElem = document.getElementById('i18n-setup-desc');
-    const inputElem = document.getElementById('input-initial-apikey');
-    const btnElem = document.getElementById('i18n-setup-btn');
-    const linkElem = document.getElementById('i18n-setup-link');
-
-    if (titleElem) titleElem.innerText = t.setupTitle;
-    if (descElem) descElem.innerText = t.setupDesc;
-    if (inputElem) inputElem.placeholder = t.setupPlaceholder;
-    if (btnElem) btnElem.innerText = t.setupBtn;
-    if (linkElem) linkElem.innerText = t.setupGetLink;
-}
-
-// Fungsi saat tombol simpan di pop-up diklik
-function saveInitialApiKey() {
-    const val = document.getElementById('input-initial-apikey').value.trim();
-    if (!val) {
-        alert("API Key tidak boleh kosong!");
-        return;
-    }
-    customApiKey = val;
-    localStorage.setItem('user_gemini_apikey', val);
-    
-    // Tutup modal pop-up setelah disimpan
-    const modal = document.getElementById('welcome-setup-modal');
-    if (modal) modal.style.display = 'none';
 }
 
 </script>
