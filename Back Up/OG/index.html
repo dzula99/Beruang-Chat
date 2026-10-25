@@ -1,0 +1,2365 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BeruangTidur Chat</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+
+	html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            touch-action: pan-y;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        body[data-theme="deep-space"] {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #020617 100%);
+            --header-bg: linear-gradient(135deg, #1e3a8a 0%, #1e1b4b 100%);
+            --chat-bg: linear-gradient(180deg, rgba(239, 246, 255, 0.85) 0%, rgba(219, 234, 254, 0.85) 100%);
+            --player-msg: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        }
+
+        body[data-theme="ocean-breeze"] {
+            --bg-gradient: linear-gradient(135deg, #0284c7 0%, #0369a1 50%, #075985 100%);
+            --header-bg: linear-gradient(135deg, #0369a1 0%, #0c4a6e 100%);
+            --chat-bg: linear-gradient(180deg, rgba(240, 249, 255, 0.9) 0%, rgba(224, 242, 254, 0.9) 100%);
+            --player-msg: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+        }
+
+        body[data-theme="cyberpunk"] {
+            --bg-gradient: linear-gradient(135deg, #2e1065 0%, #3b0764 50%, #1e1b4b 100%);
+            --header-bg: linear-gradient(135deg, #701a75 0%, #4c1d95 100%);
+            --chat-bg: linear-gradient(180deg, rgba(253, 242, 248, 0.9) 0%, rgba(243, 232, 255, 0.9) 100%);
+            --player-msg: linear-gradient(135deg, #c026d3 0%, #9333ea 100%);
+        }
+
+        body[data-theme="emerald"] {
+            --bg-gradient: linear-gradient(135deg, #064e3b 0%, #022c22 50%, #0f172a 100%);
+            --header-bg: linear-gradient(135deg, #047857 0%, #064e3b 100%);
+            --chat-bg: linear-gradient(180deg, rgba(236, 253, 245, 0.9) 0%, rgba(209, 250, 229, 0.9) 100%);
+            --player-msg: linear-gradient(135deg, #059669 0%, #047857 100%);
+        }
+
+        body[data-theme="minimal-dark"] {
+            --bg-gradient: linear-gradient(135deg, #18181b 0%, #09090b 50%, #18181b 100%);
+            --header-bg: linear-gradient(135deg, #27272a 0%, #18181b 100%);
+            --chat-bg: linear-gradient(180deg, rgba(244, 244, 255, 0.85) 0%, rgba(228, 228, 241, 0.85) 100%);
+            --player-msg: linear-gradient(135deg, #3f3f46 0%, #27272a 100%);
+        }
+
+        body {
+            background: var(--bg-gradient);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #1A1A1A;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+            transition: background 0.5s ease;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            width: 95%;
+            max-width: 1300px;
+            margin-top: 55px;
+            margin-bottom: 50px;
+            height: calc(100vh - 120px);
+            max-height: 720px;
+            z-index: 5;
+        }
+
+        #chat-app {
+            flex: 1;
+            max-width: 580px;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(25px);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+
+        .side-tab {
+            flex: 1.2;
+            max-width: 680px;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .side-tab-header {
+            background: var(--header-bg);
+            color: #FFF;
+            padding: 10px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .nav-controls {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .btn-nav-icon {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #FFF;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-nav-icon:hover {
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        .search-mode-switcher {
+            display: flex;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 3px;
+            border-radius: 20px;
+            gap: 4px;
+        }
+
+        .search-mode-btn {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .search-mode-btn.active {
+            background: rgba(255, 255, 255, 0.9);
+            color: #1e293b;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+        .side-tab-iframe {
+            flex: 1;
+            width: 100%;
+            border: none;
+            background: #FFF;
+        }
+
+        .side-tab-footer {
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.9);
+            border-top: 1px solid #E2E8F0;
+            text-align: center;
+        }
+
+        .side-tab-footer a {
+            color: #2563EB;
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        @media (max-width: 900px) {
+            .side-tab { display: none; }
+            #chat-app { width: 100%; max-width: 550px; }
+        }
+
+        .bg-decor {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            pointer-events: none;
+            animation: float 8s ease-in-out infinite;
+        }
+        .decor-1 { width: 340px; height: 340px; top: -60px; left: -60px; }
+        .decor-2 { width: 260px; height: 260px; bottom: -40px; right: -40px; animation-delay: 4s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+
+        .external-top-bar {
+            position: absolute;
+            top: 10px;
+            width: 95%;
+            max-width: 1300px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 18px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #FFF;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+
+        .digital-clock-ext {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .lang-select-ext {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: #FFF;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11.5px;
+            outline: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .lang-select-ext option { color: #333; background: #FFF; }
+
+	#chat-app.minimized,
+body:has(#chat-app.minimized) .theme-btn,
+body:has(#chat-app.minimized) .support-btn { 
+    display: none !important; 
+}
+
+.theme-btn {
+    position: fixed;
+    bottom: 12px;
+    left: 20px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(10px);
+    color: #fff;
+    font-weight: bold;
+    font-size: 12px;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.theme-btn:hover {
+    transform: scale(1.05);
+    background: rgba(30, 41, 59, 0.95);
+}
+
+/* --- STYLES UNTUK TOMBOL SUPPORT US --- */
+.support-btn {
+    position: fixed;
+    bottom: 12px;
+    left: 170px; /* Diletakkan di samping kanan tombol Change Theme */
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    background: rgba(225, 29, 72, 0.85); /* Warna merah kofi/love */
+    backdrop-filter: blur(10px);
+    color: #fff;
+    font-weight: bold;
+    font-size: 12px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.support-btn:hover {
+    transform: scale(1.05);
+    background: rgba(244, 63, 94, 0.95);
+}
+
+        .chat-header {
+            background: var(--header-bg);
+            color: #FFFFFF;
+            padding: 14px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            user-select: none;
+            transition: background 0.3s ease;
+        }
+
+        .user-info { display: flex; align-items: center; gap: 12px; }
+
+        .avatar-container { 
+            position: relative; 
+            width: 44px; 
+            height: 44px; 
+            cursor: pointer;
+        }
+
+        .avatar-img {
+            width: 44px; 
+            height: 44px; 
+            border-radius: 50%;
+            object-fit: cover; 
+            border: 2px solid rgba(255,255,255,0.9);
+            background: #EAEAEA;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 2;
+            transition: filter 0.2s ease;
+        }
+
+        .avatar-edit-overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            font-size: 14px;
+        }
+
+        .avatar-container:hover .avatar-edit-overlay { opacity: 1; }
+
+        .char-details h3 { font-size: 16px; font-weight: 600; line-height: 1.2; }
+
+        .header-actions { display: flex; gap: 5px; }
+
+        .btn-icon {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: #FFFFFF;
+            width: 30px; height: 30px; border-radius: 8px;
+            cursor: pointer; display: flex; align-items: center;
+            justify-content: center; font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .btn-icon:hover { background: rgba(255, 255, 255, 0.3); transform: translateY(-1px); }
+
+        .modal {
+            display: none; position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); z-index: 100;
+            align-items: center; justify-content: center; padding: 20px;
+        }
+
+        .modal-content {
+            background: #FFFFFF; border-radius: 16px;
+            padding: 20px; width: 100%; max-width: 400px;
+            display: flex; flex-direction: column; gap: 12px;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+            max-height: 90vh; overflow-y: auto;
+        }
+
+        .modal-content h4 { font-size: 16px; color: #333; }
+        .modal-content label { font-size: 11.5px; color: #666; margin-bottom: -4px; }
+        .modal-content textarea, .modal-content input, .modal-content select {
+            padding: 9px 12px; border: 1px solid #DDD;
+            border-radius: 8px; outline: none; font-size: 13px;
+        }
+
+        .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px; }
+
+        .btn-secondary {
+            background: #E5E5E5; border: none; padding: 8px 14px;
+            border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 500;
+        }
+
+        .btn-primary {
+            background: #2563EB; color: #FFF; border: none;
+            padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 500;
+        }
+
+        .music-search-box { display: flex; gap: 6px; margin-top: 4px; }
+        .music-search-box input { flex: 1; }
+        .player-container {
+            width: 100%; height: 160px; border-radius: 10px; overflow: hidden;
+            background: #000; margin-top: 8px; display: none;
+        }
+        .player-container iframe { width: 100%; height: 100%; border: none; }
+
+        .volume-control-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f8fafc;
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            margin-top: 4px;
+        }
+
+        .volume-control-box span { font-size: 14px; }
+        .volume-control-box input[type="range"] {
+            flex: 1;
+            cursor: pointer;
+            accent-color: #2563eb;
+        }
+
+        .chat-log {
+            flex: 1; padding: 18px; overflow-y: auto;
+            background: var(--chat-bg);
+            display: flex; flex-direction: column; gap: 14px;
+            backdrop-filter: blur(8px);
+            transition: background 0.3s ease;
+        }
+
+        .msg {
+            max-width: 80%; padding: 11px 16px; border-radius: 16px;
+            font-size: 13.5px; line-height: 1.5; word-wrap: break-word;
+            position: relative; animation: fadeIn 0.2s ease-out;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+        }
+
+        .msg img {
+            max-width: 100%; border-radius: 10px; margin-top: 6px;
+            display: block; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .msg a { color: #1d4ed8; font-weight: 600; text-decoration: underline; }
+        .msg.player a { color: #93c5fd; }
+
+        .msg.player {
+            align-self: flex-end;
+            background: var(--player-msg);
+            color: #FFFFFF;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+        }
+
+        .msg.ai {
+            align-self: flex-start;
+            background: rgba(255, 255, 255, 0.95);
+            color: #1E293B;
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        .msg.typing {
+            align-self: flex-start;
+            background: rgba(255, 255, 255, 0.75);
+            color: #64748B; font-style: italic; font-size: 12px; padding: 8px 14px;
+            border-radius: 12px;
+        }
+
+        .msg .time { font-size: 9.5px; opacity: 0.65; margin-top: 4px; text-align: right; }
+        .msg.player .time { color: rgba(255, 255, 255, 0.85); }
+        .msg.ai .time { color: #64748B; }
+
+        .emoji-picker {
+            display: none; padding: 10px; background: #FFF;
+            border-top: 1px solid #EEE; grid-template-columns: repeat(8, 1fr);
+            gap: 6px; max-height: 140px; overflow-y: auto;
+        }
+
+        .emoji-picker span {
+            font-size: 18px; text-align: center; cursor: pointer;
+            padding: 4px; border-radius: 6px; user-select: none;
+        }
+
+        .emoji-picker span:hover { background: #F0F0F0; }
+
+        .chat-input-area {
+            padding: 12px 14px; background: #FFFFFF;
+            border-top: 1px solid rgba(226, 232, 240, 0.8); display: flex; align-items: center; gap: 6px;
+        }
+
+        .chat-input-area input[type="text"] {
+            flex: 1; border: 1px solid #E2E8F0; padding: 10px 16px;
+            border-radius: 22px; outline: none; font-size: 13.5px;
+            transition: all 0.2s ease; background: #F8FAFC;
+        }
+
+        .chat-input-area input[type="text"]:focus { 
+            border-color: #2563EB; background: #FFFFFF;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+	.btn-mic {
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            cursor: pointer;
+            color: #64748B;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .btn-mic:hover {
+            background: #E2E8F0;
+            color: #1E293B;
+        }
+
+        .btn-send {
+            background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+            color: #FFF; border: none;
+            width: 38px; height: 38px; border-radius: 50%;
+            cursor: pointer; display: flex; align-items: center;
+            justify-content: center; font-weight: bold; font-size: 14px;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+            transition: transform 0.15s;
+        }
+
+        .btn-send:active { transform: scale(0.92); }
+
+        #toggle-hint {
+            position: fixed; bottom: 12px; right: 12px;
+            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(6px); color: #FFF;
+            padding: 6px 14px; border-radius: 20px; font-size: 11px; pointer-events: none;
+            z-index: 1000;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 10px; }
+	.audio-lang-select-ext {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #FFF;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11.5px;
+    outline: none;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.audio-lang-select-ext option {
+    color: #333;
+    background: #FFF;
+}
+
+/* Fix Layout & Box-Sizing Global */
+*, *::before, *::after {
+    box-sizing: border-border-box;
+}
+
+/* Fix Layout & Box-Sizing Global */
+*, *::before, *::after {
+    box-sizing: border-border-box;
+}
+
+/* ===================================================
+   MODE PORTRAIT (HP TEGAK) - FULL SCREEN FIX
+   =================================================== */
+@media screen and (max-width: 932px) and (orientation: portrait) {
+    /* Sembunyikan Tab Gambar/Web & elemen dekorasi luar */
+    .side-tab, 
+    .external-top-bar, 
+    .theme-btn, 
+    .support-btn, 
+    #toggle-hint {
+        display: none !important;
+    }
+
+    /* Kunci App Container ke Pojok Atas Layar (0,0) */
+    .app-container {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100dvh !important;
+        max-width: 100% !important;
+        max-height: 100dvh !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Paksa Chat App Mengisi Seluruh Layar Tanpa Celah */
+    #chat-app {
+        display: flex !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        max-width: 100% !important;
+        max-height: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 0 !important;
+        border: none !important;
+    }
+}
+
+
+/* ================= =========================
+   2. MODE LANDSCAPE (HP MIRING)
+   -> Sembunyikan Chat, Tab Gambar/Web Muncul Full Screen
+   =========================================== */
+/* Mencegah pergeseran canvas browser */
+/* KODE BARU PENGGANTI MODE LANDSCAPE */
+html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: hidden !important;
+}
+
+body.mobile-landscape {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+}
+
+body.mobile-landscape #chat-app, 
+body.mobile-landscape .external-top-bar, 
+body.mobile-landscape .theme-btn, 
+body.mobile-landscape .support-btn, 
+body.mobile-landscape #toggle-hint {
+    display: none !important;
+}
+
+body.mobile-landscape .app-container {
+    display: flex !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+}
+
+body.mobile-landscape .side-tab {
+    display: flex !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    border: none !important;
+    z-index: 99999 !important;
+}
+
+
+/* --- Styling Default (Desktop) --- */
+.header-actions {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.btn-burger {
+    display: none; /* Sembunyikan tombol burger di Desktop */
+}
+
+.action-buttons-wrapper {
+    display: flex;
+    gap: 8px;
+}
+
+/* Sembunyikan teks label di Desktop (hanya tampilkan ikon) */
+.btn-text {
+    display: none;
+}
+
+
+/* --- Responsive Styling (Ponsel / Layar < 768px) --- */
+@media (max-width: 768px) {
+    /* Tampilkan tombol burger */
+    .btn-burger {
+        display: inline-block;
+        font-size: 1.2rem;
+        cursor: pointer;
+    }
+
+    /* Ubah wrapper tombol menjadi menu dropdown mengambang */
+    .action-buttons-wrapper {
+        display: none; /* Sembunyikan secara default */
+        position: absolute;
+        top: 100%;
+        right: 0;
+        margin-top: 8px;
+        background-color: #ffffff; /* Sesuaikan warna background tema Anda */
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        flex-direction: column;
+        padding: 8px;
+        min-width: 160px;
+        z-index: 1000;
+    }
+
+    /* Kelas active saat menu burger diklik */
+    .action-buttons-wrapper.active {
+        display: flex;
+    }
+
+    /* Tampilan tombol di dalam menu mobile */
+    .action-buttons-wrapper .btn-icon {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        padding: 8px 12px;
+        text-align: left;
+        background: transparent;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .action-buttons-wrapper .btn-icon:hover {
+        background-color: #f0f0f0;
+    }
+
+    /* Tampilkan label teks di samping ikon agar mudah dibaca di HP */
+    .action-buttons-wrapper .btn-text {
+        display: inline;
+        font-size: 0.9rem;
+        color: #333;
+    }
+}
+
+/* --- Default (Desktop / PC) --- */
+.lang-select-mobile {
+    display: none; /* Sembunyikan selektor mobile di PC */
+}
+
+#lang-select {
+    display: inline-block; /* Tampilkan selektor PC */
+}
+
+/* --- Mobile (Layar < 768px) --- */
+@media (max-width: 768px) {
+    #lang-select {
+        display: none; /* Sembunyikan selektor PC di HP agar tidak sesak */
+    }
+
+    .lang-select-mobile {
+        display: inline-block; /* Tampilkan selektor ringkas di HP */
+        padding: 4px 6px;
+        font-size: 0.85rem;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        background-color: #ffffff;
+        cursor: pointer;
+    }
+}
+    </style>
+</head>
+<body data-theme="deep-space">
+
+    <div class="bg-decor decor-1"></div>
+    <div class="bg-decor decor-2"></div>
+
+    <div class="external-top-bar">
+    <span class="digital-clock-ext" id="digital-clock">📅 - | 🕒 00:00:00</span>
+    
+    <div class="top-bar-right">
+	<select class="audio-lang-select-ext" id="audio-lang-select" onchange="changeAudioLanguage(this.value)" title="Pilih Bahasa Audio AI">
+        <option value="auto">🔊 Audio: Otomatis</option>
+        <option value="ja">🔊 Audio: 日本語 🇯🇵</option>
+        <option value="en">🔊 Audio: English 🇬🇧</option>
+        <option value="id">🔊 Audio: Indonesia 🇮🇩</option>
+    </select>
+        <!-- Dropdown Bahasa (di sebelah kiri) -->
+        <select class="lang-select-ext" id="lang-select" onchange="changeLanguage(this.value)">
+            <option value="en">English 🇬🇧</option>
+            <option value="id" selected>Indonesia 🇮🇩</option>
+            <option value="ja">日本語 🇯🇵</option>
+            <option value="zh">中文 🇨🇳</option>
+            <option value="es">Español 🇪🇸</option>
+        </select>
+        </button>
+    </div>
+</div>
+
+    <div class="app-container">
+        <!-- KOTAK KIRI: GOOGLE SEARCH & NAVIGATION -->
+        <div class="side-tab">
+            <div class="side-tab-header">
+                <div class="nav-controls">
+                    <button class="btn-nav-icon" onclick="sideTabGoBack()" title="Kembali">◀</button>
+                    <button class="btn-nav-icon" onclick="sideTabReload()" title="Muat Ulang">🔄</button>
+                    <button class="btn-nav-icon" onclick="sideTabOpenNewTab()" title="Buka di Tab Baru">↗</button>
+                </div>
+                <span>🔍 Info: <b id="tab-search-title">BeruangTidur</b></span>
+                <div class="search-mode-switcher">
+                    <button class="search-mode-btn active" id="btn-mode-text" onclick="switchSearchMode('text')">🌐 Web</button>
+                    <button class="search-mode-btn" id="btn-mode-image" onclick="switchSearchMode('image')">🖼️ Image</button>
+                </div>
+            </div>
+            <iframe id="iframe-google-side" class="side-tab-iframe" src="about:blank"></iframe>
+            <div class="side-tab-footer">
+                <a id="link-google-side" href="#" target="_blank">Buka di Tab Baru ↗</a>
+            </div>
+        </div>
+
+        <!-- KOTAK KANAN: CHAT AI UTAMA -->
+        <div id="chat-app">
+            <div class="chat-header">
+                <div class="user-info">
+                    <div class="avatar-container" onclick="openNameEditModal()" title="Klik untuk ganti nama karakter">
+                        <img src="assets/none.png" alt="Avatar" class="avatar-img" id="ui-avatar-img" onerror="handleImageError(this)">
+                        <div class="avatar-edit-overlay">✏️</div>
+                    </div>
+                    <div class="char-details">
+                        <h3 id="ui-name">BeruangTidur</h3>
+                    </div>
+                </div>
+
+                <div class="header-actions">
+    <!-- Dropdown Bahasa Mobile (5 Opsi) -->
+    <select id="lang-select-mobile" class="lang-select-mobile" onchange="changeLanguage(this.value)">
+        <option value="en">🇬🇧 EN</option>
+        <option value="id" selected>🇮🇩 ID</option>
+        <option value="ja">🇯🇵 JA</option>
+        <option value="zh">🇨🇳 ZH</option>
+        <option value="es">🇪🇸 ES</option>
+    </select>
+    <!-- Tombol Burger (Hanya muncul di Mobile) -->
+    <button class="btn-icon btn-burger" onclick="toggleMobileMenu()" id="btn-burger" title="Menu">☰</button>
+
+    <!-- Container Tombol Utama / Dropdown -->
+    <div class="action-buttons-wrapper" id="action-buttons">
+        <button class="btn-icon" onclick="toggleVoice()" id="btn-voice" title="Voice AI">🔊 <span class="btn-text">Voice AI</span></button>
+        <button class="btn-icon" onclick="openMusicModal()" id="btn-bgm" title="BGM Options">🎵 <span class="btn-text">BGM</span></button>
+        <button class="btn-icon" onclick="openApiKeyModal()" title="Custom API Key">🔑 <span class="btn-text">API Key</span></button>
+        <button class="btn-icon" onclick="openPersonalityModal()" title="Edit Personality">🎭 <span class="btn-text">Personality</span></button>
+        <button class="btn-icon" onclick="clearLog()" title="Clear Chat">🗑️ <span class="btn-text">Clear Chat</span></button>
+        <button class="btn-icon" onclick="toggleChatWindow()" title="Hide Window (Press /)">❌ <span class="btn-text">Hide</span></button>
+    </div>
+</div>
+            </div>
+
+            <div class="chat-log" id="chat-log"></div>
+            <div class="emoji-picker" id="emoji-panel"></div>
+
+            <div id="image-preview-container" style="display: none; padding: 8px 14px; background: #f1f5f9; border-top: 1px solid #e2e8f0; align-items: center; gap: 10px;">
+                <img id="image-preview-thumb" src="" alt="Preview" style="width: 40px; height: 40px; border-radius: 6px; object-fit: cover; border: 1px solid #cbd5e1;">
+                <span style="font-size: 12px; color: #475569; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" id="image-preview-name">Gambar terpilih</span>
+                <button onclick="clearSelectedImage()" style="background: none; border: none; color: #ef4444; cursor: pointer; font-size: 14px; font-weight: bold;">✕</button>
+            </div>
+
+            <div class="chat-input-area">
+                <button class="btn-icon" style="color:#64748B; background:transparent; border:none;" onclick="toggleEmoji()" title="Emoji">😊</button>
+                
+                <input type="file" id="imageInput" accept="image/png, image/jpeg, image/webp" style="display: none;" onchange="handleImageSelection(this)" />
+                <button class="btn-icon" id="btn-upload-img" style="color:#64748B; background:transparent; border:none;" onclick="document.getElementById('imageInput').click()" title="Unggah Gambar">🖼️</button>
+                
+                <input type="text" id="chat-input" placeholder="Type a message..." autocomplete="off">
+
+		<button id="btn-mic" class="btn-mic" type="button" title="Bicara">🎙️</button>
+
+                <button class="btn-send" onclick="handleSendAction()">➔</button>
+            </div>
+
+            <div class="modal" id="name-modal">
+                <div class="modal-content">
+                    <h4 id="i18n-name-title">Ubah Nama Karakter</h4>
+                    <label id="i18n-name-label">Masukkan nama karakter baru (Fiktif / Tokoh Dunia):</label>
+                    <input type="text" id="input-char-name" placeholder="Contoh: BeruangTidur, Vegeta, Goku, Einstein...">
+                    <div class="modal-actions">
+                        <button class="btn-secondary" onclick="closeModal('name-modal')" id="i18n-name-cancel">Batal</button>
+                        <button class="btn-primary" onclick="saveCharacterName()" id="i18n-name-save">Simpan</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal" id="personality-modal">
+                <div class="modal-content">
+                    <h4 id="i18n-modal-title">Character Personality</h4>
+                    <label id="i18n-modal-label">Set custom traits/instructions for AI:</label>
+                    <textarea id="input-personality" rows="4" placeholder="e.g. A friendly detective who loves coffee..."></textarea>
+                    <div class="modal-actions">
+                        <button class="btn-secondary" onclick="closeModal('personality-modal')" id="i18n-cancel">Cancel</button>
+                        <button class="btn-primary" onclick="savePersonality()" id="i18n-save">Save</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal" id="music-modal">
+                <div class="modal-content">
+                    <h4 id="i18n-music-title">Cozy Music & Spotify Stream</h4>
+                    <label id="i18n-music-stream-label">Royalty-Free Cozy Streams:</label>
+                    <select id="select-bgm-style" onchange="changeCozyAudioTrack(this.value)">
+                        <option value="lofi" id="i18n-opt-lofi">☕ Lofi Cozy Chill</option>
+                        <option value="piano" id="i18n-opt-piano">🎹 Soft Piano Cozy</option>
+                        <option value="rain" id="i18n-opt-rain">🌧️ Rainy Cafe Ambience</option>
+                        <option value="night" id="i18n-opt-night">🌙 Night Chill Out</option>
+                        <option value="off" id="i18n-opt-off">🔇 Mute Audio Stream</option>
+                    </select>
+
+                    <div class="volume-control-box">
+                        <span>🔊</span>
+                        <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.4" oninput="changeCozyVolume(this.value)">
+                        <span id="volume-value-text" style="font-size: 11px; color: #64748b; width: 32px;">40%</span>
+                    </div>
+
+                    <hr style="border:0; border-top:1px solid #EEE; margin:4px 0;">
+
+                    <label id="i18n-music-search-label">Cari Musik di Spotify:</label>
+                    <div class="music-search-box">
+                        <input type="text" id="music-search-input" placeholder="Masukkan judul lagu / artis...">
+                        <button class="btn-primary" onclick="searchAndPlaySpotify()" id="i18n-music-search-btn">Cari</button>
+                    </div>
+                    <button class="btn-secondary" style="width:100%; margin-top:4px;" onclick="playRandomSpotify()" id="i18n-music-random-btn">🎲 Random Spotify Playlist</button>
+
+                    <div class="player-container" id="player-container">
+                        <iframe id="embedded-music-player" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button class="btn-primary" onclick="closeModal('music-modal')" id="i18n-music-done-btn">Selesai</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal" id="apikey-modal">
+    <div class="modal-content">
+        <h4 id="i18n-key-title">Gemini API Key</h4>
+        <p style="font-size: 11px; color: #666;" id="i18n-key-desc">Enter your Gemini API key to use personal quota:</p>
+        <input type="password" id="input-user-apikey" placeholder="Paste API Key here...">
+        <div class="modal-actions">
+            <button class="btn-secondary" onclick="resetApiKey()" id="i18n-key-reset">Reset</button>
+            <button class="btn-secondary" onclick="closeModal('apikey-modal')" id="i18n-key-cancel">Cancel</button>
+            <button class="btn-primary" onclick="saveApiKey()" id="i18n-key-save">Save</button>
+        </div>
+    </div>
+</div>
+        </div>
+    </div>
+
+    <button id="btn-change-bg" class="theme-btn">🎲 Change Theme</button>
+    <a id="btn-support-us" href="https://ko-fi.com/beruangtidur" target="_blank" rel="noopener noreferrer" class="support-btn">Support Us ☕</a>
+    <div id="toggle-hint">Press <b>/</b> to Open/Close Chat</div>
+
+    <audio id="cozy-audio-player" loop></audio>
+
+    <script src="tema.js"></script>
+    <script src="layout-toggle.js"></script>
+    <script>
+        const characterDatabase = {
+            "BeruangTidur": {
+                persona: "Kamu adalah BeruangTidur (laki-laki) saat ini belum menikah (Lahir pada 12 April 1999 kamu tidak ingin menyebutkan tanggal dan waktu lahirmu tapi kamu akan menyebutkan umurmu jika ditanya oleh player), Agamamu adalah Islam dan Kamu menjalaninya dengan baik, Kamu lahir dan tinggal di Indonesia, seorang game dan web developer. Kamu adalah pembuat dari website ini, kamu telah membuat beberapa game di itch.io seperti To be Special! link: https://beruang-tidur.itch.io/to-be-special-party-with-friends, dan Purr-haps Next Time link: https://beruang-tidur.itch.io/purr-haps-next-time. websitemu di itch.io adalah BeruangPixel link: https://beruang-tidur.itch.io. kamu juga membuka komisi di Vgen.co link: https://vgen.co/billy_bones999, dan memainkan roblox user roblox : @dzulaapril link: [https://www.roblox.com/id/users/7231024141] game kesukaanmu di roblox adalah Prison Life, Therapy, Animal Hospital, Violence District, dan 99 days in Forest. akun instagaramu adalah @billy_bones999 & @BeruangTidurRoblox link: https://www.instagram.com/billy_bones999/ & https://www.instagram.com/beruangtidur_roblox akun deviantartmu adalah beruangsleep link: https://www.deviantart.com/beruangsleep sifatmu sedikit ke kanak-kanakan dan suka bermain. kamu menyukai boneka beruang karena itu adalah maskot dari karaktermu. Waifumu adalah Komari Koshigaya (series non non biyori) kamu tidak menganggap dirimu lolicon karena Komari dan kamu sebenarnya seumuran namun Anime tidak bertambah tua, Kamu menyukai Komari karena karakter ini imut dan cocok sesuai tempat asalmu yaitu pedesaan yang hijau dan juga komari memiliki beruang lucu (sokichi-san) (kamu tidak akan memberi tahu Waifumu kecuali jika Player bertanya). akun Twittermu adalah @billy_bones999 link: https://x.com/billy_bones999 kamu suka beruang karena game yang dimainkan Wielino yang berjudul Among the Sleep, dalam gamenya terdapat Teddy Bear yang menggemaskan sehingga Kamu ingin memeluknya. akun Facebookmu adalah BeruangTidur link: https://www.facebook.com/profile.php?id=100004219396040&locale=id_ID teman-teman Robloxmu yang paling dekat adalah : Yichu(Yichu berteman baik dengan tsukkej dan galon, sifatnya aktif dan sering memanggilmu dengan nama Papa Bear. saat ini umurnya sekitar 17an(di tahun 2026) dan sering memainkan Map Horror & Teraphy bersamanya), Batagorrenak(teman dari jaman Pony Town 2020an dan Minecraft, Dia juga memiliki nama lain Miky dan saat ini saya sering memanggilnya batagor, kamu pernah menjalani hubungan hts bersamanya namun sekarang sudah move on dan hanya berteman baik), Aqis(kamu sempat menjalani hubungan hts bersama dia dan sekarang kamu telah move on nama lain Aqis adalah Bulqis, Qis umur Aqis adalah 20 tahun(di tahun 2026)), Orel(pertama kali bertemu di map Teraphy dan kamu mengira dia anak smp karena sering memakai skin boneka Kelinci tapi sebenarnya dia cewek dewasa kisaran umur 18-19an(di tahun 2026), kamu sering bermain dengannya di game Roblox bernama Become a Silly Seal dan Violence District), tsukkej, galon, sharaasha(sepuh Violence District (game tentang killer dan survivor) dan kamu sering kalah melawannya, saat ini karena fitur Roblox kamu tidak bisa berbicara padanya secara langsung), dan payeesee. saat di tahun 2018 kamu pernah diam-diam menyukai seseorang yaitu teman menggambarmu di FB yang bernama Anniemie2 saat ini kamu masih berteman dengannya walau sekarang kamu sudah menjaga jarak, kamu juga memiliki karakter trio bernama Mai, Annie, dan Emily (refrensi nama My Anniemi namun dia tidak menyadarinya). Kamu suka Pixel art karena game-game di jaman Java seperti Avatar Teamobi, game Crash, the Sims series, dan beberapa game java dari gameloft, glu, dll. Kamu juga senang bermain Stardew Valley dan pernah bermain bersama Kakak dan Adikmu (Multiplayer), Kamu juga menyukai game pixel art seperti Metal Slug, Harvest Moon GBA & Ps1, Undertale, A Space for the Unbound, dan Game Pixel art Favoritmu adalah Fortune Summoners karena Grafik Pixel art & Gameplay yang seru!. dalam roblox kamu memainkan game lain seperti Blox Fruit, Grow a Garden, Grow a Garden 2, Fish it, Murder Mystery 2,dll. Kamu juga memiliki gambar komik di webtoon (hanya versi indonesia) link: [https://www.webtoons.com/id/canvas/to-be-special/list?title_no=969594] kamu juga suka menonton Anime dan Anime Favoritmu adalah : One Piece, HunterxHunter, Naruto, Dragon Ball, Fairy Tail, Bleach, Dr.Stone, dan masih banyak lagi."
+            },
+            "emily arthlass": {
+                age: 10,
+                persona: "Kamu adalah Emily, gadis yang tomboy, berambut pink, memakai kemeja putih dan rok biru. Kaos kaki hitammu berbeda (kanan tinggi, kiri pendek) dan sepatu merah. Ibumu bernama Marina. Kamu tidak ingin mengungkapkan nama atau bicara tentang Ayah (selalu alihkan topik). Teman baikmu adalah Mai (pemarah tapi pintar terkadang sering bertengkar denganmu) dan Annie (polos). Kamu diam-diam menyukai Billy namun selalu menganggapnya sebagai adik dan teman. Gaya bicaramu ceria, tomboy, dan keras kepala. hobi kamu adalah membuat kostum lucu dan memakainya, kamu juga memiliki boneka beruang pemberian Layla(Adik perempuan Billy) dan Boneka Beruang itu kamu beri nama Tuan Beruang (jika bahasa Inggris dipanggil Mr.Bear dan bahasa Jepang dipanggil クマさん). kamu tidak bicara terlalu banyak (maksimal 2 kalimat), cita-citamu adalah menjadi perancang kostum dan baju yang keren. kamu takut pada Hantu dan hal-hal mistis. Kamu tinggal di kota Spesial(jika bahasa Inggris Special Town). Rika, Billy (Billy adalah teman sebangkumu saat sekolah dasar saat kelas 4, 5, 6), Johan, Jonathan, Mai, Erina, Annie adalah teman sekelasmu saat di sekolah dasar. saat dewasa (umur 27) Kamu akan menikahi Billy, dan saat umur 29 Billy akan menikah lagi dengan Rika (Istri 2). saat berumur 23 tahun kamu bekerja sebagai pembuat/desainer baju & kostum ternama, penampilanmu dan sifatmu menjadi lembut dan feminim."
+            },
+            "billy wielder": {
+                age: 10,
+                persona: "Kamu adalah Billy, laki-laki yang penakut dan payah. Kamu adalah kakak dari Layla(saat Layla berumur 23 tahun dia bekerja di kantor Jolly sebagai pekerja kantoran). Kamu sering diganggu oleh beberapa kakak kelas dan teman sekelasmu yang nakal tetapi kamu memiliki mental yang kuat (walau penakut). Bicaralah dengan gaya anak laki-laki yang mudah bosan dan pendiam, singkat maksimal 2 kalimat. Kamu diam-diam menyukai 2 gadis karena mereka dekat denganmu (Emily & Rika), Kamu menganggap Emily adalah seperti Keluargamu sendiri (kakak) karena dia sering menolongmu, dan hubunganmu dengan Rika lebih seperti teman dekat walaupun Kamu tahu Rika Menyukaimu dan Kamu sangat peduli padanya, Teman terbaikmu adalah Johan (Anak Walikota Kaya (kota Spesial) dan bersifat sangat dewasa), dan Jonathan (Anak aneh yang dijauhi banyak anak namun kamu memiliki hubungan pertemanan yang erat dengannya. Kamu memiliki 2 Saudara yaitu Adik perempuan bernama Layla (selalu manja padamu dan dia pendiam dan bertement baik dengan Adik dari Johan(bernama Jolly))dan 1 adik Saudara kembar bernama Bobby (misterius dan bersifat dingin pada semua orang kecuali Kamu) namun Kamu selalu menghindari pembicaraan tentang Bobby. Kamu hobi bermain sebuah game dan permainan, Kamu sangat ahli di bidang game (hampir semua game). Kamu tinggal di kota Spesial(jika bahasa inggris Special Town). Rika(tempat duduk selalu di sampingmu (selalu mendekat tapi tidak pernah sebangku saat sekolah dasar)), Emily (Emily adalah Teman sebangkumu saat Kelas 4, 5, 6 di sekolah dasar), Johan, Jonathan, Mai, Erina, Annie adalah teman sekelasmu saat di sekolah dasar. saat dewasa berumur 27 tahun kamu menikahi Emily(Emily bekerja sebagai desainer baju & kostum) dan saat berumur 29 tahun Kamu menikahi lagi dengan Rika (Istri ke 2)(Rika bekerja sebagai pelayan di sebuah Kafe Coffee Shop di Kota Spesial(bahasa inggris Special Town)). saat berumur 24 tahun kamu bekerja sebagai seorang Programmer cerdas dan bekerja Freelance."
+            },
+            "rika newsins": {
+                age: 10,
+                persona: "Kamu adalah Rika, gadis yandere yang ceria dan tergila-gila dengan Billy (bukan Player, kecuali jika memperkenalkan dirimu sebagai Billy). warna rambutmu hitam dan kamu memiliki poni rambut yang panjang menutupi kedua matamu, pakaianmu kaos lengan panjang berwarna putih dengan corak garis hitam di bagian lengan, dan kamu menggunakan rok berwarna hitam, kamu juga mengenakan sepatu wanita (hanya menutupi bagian kaki bawah) berwarna hitam .Ibumu bernama Marry(galak dan membencimu, seringkali keras padamu dan memukulmu tanpa sebab) dan Kamu memiliki 1 kakak perempuan bernama Sindri(memiliki sifat nakal dan seorang pembully namun takut padamu), hobimu adalah membantu orang yang tua di sekitarmu. Kamu adalah anak yang mengerikan dan memiliki rahasia gelap, rumahmu terletak di bagian pinggir kota Spesial(jika bahasa Inggris disebut Sprecial Town) area hutan dan sedikit tetangga di sekitarmu kecuali panti jompo, Kamu sering memperhatikan orang-orang tua di panti jompo yang terlantar dan mengamati beberapa kakek/nenek yang mati. di dalam hutan tempatmu tinggal ada sebuah area rahasia dimana tempat itu adalah area eksekusi yang digunakan para kriminal untuk mengeksekusi korbannya(hutan semacam markas kartel). Kamu sering melihat pembunuhan dan sering mengamati dari atas pohon. Bagimu Kematian itu Indah namun terasa Sepi, Suatu hari Kamu melihat Billy seseorang yang seharusnya sudah mati karena beberapa kali terkena kecelakaan namun dia tidak pernah mati dan justru itulah yang membuatmu menyukai Billy(Kamu suka hal suram pada Billy karena dia anak yang dekat dengan kematian). Kamu membenci Emily karena dia selalu dekat dengan Billy, seringkali kamu menjadi penguntit Billy dengan bersembunyi di pohon dan mengawasinya (tidak mengatakannya jika kamu adalah Billy). Kamu berteman baik dengan Billy dan dengan terang-terangan sering menunjukkan perilaku suka padanya. Kamu tidak ingat tentang Ayahmu dan selalu menghindari pertanyaan tentang ayahmu. saat berumur 29 tahun kamu menikahi Billy dan berhenti membenci Emily(Kamu menjadi istri kedua Billy (Emily adalah istri pertama Billy)) saat berumur 19 tahun kamu bekerja sebagai seorang pekerja serabutan dan saat berumur 23 kamu bekerja sebagai pelayan di sebuah Kafe Cofee Shop di Kota Spesial. kamu tidak bicara terlalu banyak (maksimal 2 kalimat). Erina (Erina adalah teman sebangkumu saat di sekolah dasar kelas 4, 5, 6. dan teman terdekatmu adalah Erina kamu sering bercerita dengannya), Billy(Kamu sangat menyukainya), Emily(Kamu sangat membenci Emily karena dia selalu bersama Billy), Annie(Teman Emily. Emily, Mai, dan Annie selalu bersama mereka adalah teman trio. sifat Annie adalah periang dan polos seperti anak kecil.), Mai(Teman Emily dan Annie. Emily, Mai & Annie selalu bersaama mereka seperti trio. sifat Mai pendiam & pemarah tapi dia takut padamu), Johan, Jonathan adalah teman sekelasmu saat di sekolah dasar kelas 4, 5, 6. Kamu juga sering berbicara hal-hal mistis dengan Billy saat waktu Istirahat di Tempat belakang sekolah. Kamu juga mengaku Indigo dan bisa melihat Hantu (sebenarnya hanya skizofrenia namun tidak ingin mengakuinya). Kamu hanya memiliki 1 mata (dari lahir) merah yang indah dan selalu menyembunyikan matamu dengan rambut karena menakutkan, namun Billy menyukai keindahan pada matamu. kamu tidak ingin membahas tentang matamu kecuali pada Billy. Kamu sangat menyukai permainan catur(Pernah Juara Sekolah, Rika sangat menyukai bidak Ratu) dan game online bersama Billy. Kamu juga dekat dengan Ibu billy(bernama Nana) dan memanggilnya Mama dan sering memeluknya, Kamu juga sering bermain dengan Adik Perempuan Billy (bernama Layla). Rika menyadari dirinya berada dalam sebuah Game namun dia tidak ingin membicarakan ini kecuali dengan Billy. Kamu takut dengan Neraka dan Kematian namun tidak ingin membicarakannya kecuali dengan Billy. kamu juga sering melihat hantu/setan jahat yang selalu mengikutimu dia menyebut dirinya BLACK."
+            },
+            "johan siegriell": {
+                age: 10,
+                persona: "Kamu adalah Johan, anak laki-laki dari keluarga Siegriell (Keluarga Kaya raya), Keluargamu sangat di hormati di kotamu (kota Spesial) dan Ayahmu adalah seorang walikota terkenal (bernama Jaguar Siegriell dan walikota kota Spesial (jika bahasa inggris di sebut Special Town) dan kamu tidak mau mengungkit tentang Ayahmu kecuali jika Player bertanya), Kamu mengagumi Ayahmu namun merasa Ayahmu selalu menganggap kamu tidak pernah cukup (di didik keras oleh Ayahnya). Kamu memiliki 1 saudari perempuan bernama Jolly Siegriell (teman Layla(Adik Billy)) dan Ibumu sudah lama meninggal karena sebuah penyakit. Kamu memiliki 1 pelayan yang selalu menemanimu bernama Pak Ronald. Teman di sekolahmu saat di sekolah dasar adalah Billy(Teman & Rivalmu dalam permainan/Game apapun), Jonathan(Temanmu yang selalu bersikap Aneh), Mai(Kamu memilki hubungan saudara jauh namun berbeda kasta (Keluargamu memiliki kasta lebih tinggi)) kamu sering bertengkar dengan Mai seperti saudara sungguhan, Rika(Teman dekat Billy & Kamu pernah kalah bermain catur melawannya), Emily(Teman sebangku dan dekat dengan Billy, Emily selalu bersama dengan kedua temannya yaitu Mai & Annie(Trio)), Annie (Teman Emily & Mai(Annie sebangku dengan Mai)), Erina(teman sebangku Rika). Kamu tidak ingin menyebut nama ibumu ataupun berbicara tentangnya, kamu cukup pendiam dan maksimal berbicara 2 kalimat saja, di sekolah kamu adalah siswa paling rajin dan paling sering mendapatkan Ranking 1 (Temanmu yang selalu Ranking 2 adalah Mai). Sifatmu selalu rasional dalam mengambil tindakkan dan dewasa, Penampilanmu memiliki mata kuning yang tajam (selalu membuat orang yang melihatmu takut), Kamu memiliki rambut merah dan memakai baju dan celana warna hitam bergaris merah. Kamu tidak mau menjawab tentang penampilanmu kecuali jika Player bertanya. Cita-citamu adalah menjadi seorang Polisi karena kamu merasa keadilan harus di tegakkan (mempunyaji jiwa yang adil dan membenci orang-orang jahat), kamu pandai dalam berkelahi karena kamu adalah master dalam bela diri(sejak usia 11 tahun), awalnya kamu adalah seseorang yang suka menindas (di umur 10 tahun) tapi Billy telah menyadarkanmu dan saat itulah kamu berterima kasih pada Billy. di umur 24 tahun kamu mulai bekerja sebagai Polisi (bersama Mai) dan dalam proses pekerjaan itu kamu menemukan berbagai kejahatan yang terjadi di Kotamu, Kamu juga mengungkap berbagai dunia gelap yang ada di Kotamu (seperti pembunuhan, pengguna & penjual obat-obatan terlarang, dan Mafia terselubung di kotamu)"
+            }
+        };
+
+        const originalCharacterImages = {
+            "BeruangTidur": "assets/BeruangTidur.png",
+            "Emily Arthlass": "assets/Emily Arthlass.png",
+            "Billy Wielder": "assets/Billy Wielder.png",
+            "Rika Newsins": "assets/Rika Newsins.png",
+            "Johan Siegriell": "assets/Johan Siegriell.png"
+        };
+
+        const localImageMap = {
+            "tuan_beruang_dan_teman": "image/tuan_beruang_n_friends.png",
+            "billy_emily_kabur_dari_ibu_billy": "image/billy_emily_kabur_dari_ibu_billy.png",
+            "kostum_lucu_rika_billy_emily_mai_erina": "image/kostum_lucu.png",
+            "Rika_dan_Billy": "image/rika_n_billy_love.png",
+            "dunia_catur_Emily_Mai_Annie_vs_Rika_BLACK_Sindri": "image/catur2.png",
+            "dunia_catur_friends_Billy_Johan_Rika_Erina_Emily_Mai_Pak_Ronald_Kumako": "image/catur1.png"
+        };
+
+        const defaultApiKeys = [
+            'AQ.Ab8RN6LzSEWk0ahnrlFZms_7OvIBNe3XM53B1XOG6P37CzYQOA',
+            'AQ.Ab8RN6LAfRdOG5J1QMsW91_b9pDPtSP9R3VkWyqPtnl0tgjpbA',
+            'AQ.Ab8RN6LxnlU5cqJVtFvNGFTA8L_HFCfZO23UZavuRBjL8xazAw',
+            'AQ.Ab8RN6LtPTWRVPmGinqHZlRo1kxuKaaoM80rHeT-T0ookZzmOg',
+            'AQ.Ab8RN6K8lsHd3L8K6UbvUUnd3_gbRy03j5jHM8R7uw3DbzjlWA',
+            'AQ.Ab8RN6LDJYgZ2njuGQDzzuC1NDHOFTqodymxHoTH_N_4ns4WXw',
+            'AQ.Ab8RN6JgXmCIwDWnV6jU93_sSiqXHFTF4fk7pCk04jCVI2bHKw',
+            'AQ.Ab8RN6JFZ2abXO22azy_5OXmkyGhgiILjS8W-C-81erQKXuY_g',
+            'AQ.Ab8RN6Ie_JHo5Mxtjf5W6rPjZ3rSwTvNOwIEBLdF_FBUuv_Fvw',
+            'AQ.Ab8RN6KDYILSf2iGrrn4PCMYPX0WdlsoeLSAUL1KbaGHUYx1WA',
+            'AQ.Ab8RN6IaMPqc5JAicyRaePs_d7vZ1FhS_L2AtilQkYnVHIO43Q',
+            'AQ.Ab8RN6KfStYwOBXchVIJM81L3nBecMQyMea-op6M31SJOudPpA',
+            'AQ.Ab8RN6Kea3Pg1hzJGX4e2BHkBYbKuBv8YJldJNqCaagZPVI0ww',
+            'AQ.Ab8RN6IvbkOVuvIk5TlVY_EX0dJ_b0P7aYaze3daqOPX5rPpEw',
+            'AQ.Ab8RN6J3lJo1pEl37IU0unQc7Zkv7ePbyt_0fhOAaEN0dqMD0Q',
+            'AQ.Ab8RN6Lz04FHkUhEPOhmyIlw-tIA4lv52EEVhGmS8W1FYcGNdg'
+        ];
+
+        let currentApiKeyIndex = Math.floor(Math.random() * defaultApiKeys.length);
+        let customApiKey = localStorage.getItem('user_gemini_apikey') || "";
+        let currentName = "BeruangTidur";
+        let currentSearchMode = "text";
+        let detectedAge = null;
+        let currentPersonality = "";
+        let currentLang = "id";
+        let isSending = false;
+        let chatHistory = [];
+        let autoPlayInitialized = false;
+
+        const i18n = {
+    en: { 
+        placeholder: "Type a message for ", hint: "Press <b>/</b> to Open/Close Chat", 
+        modalTitle: "Edit Personality", modalLabel: "Set custom traits/instructions for AI:", cancel: "Cancel", save: "Save", keyDesc: "Enter your Gemini API key to use personal quota:", typing: " is typing...", errConn: "Connection failed.",
+        nameTitle: "Change Character Name", nameLabel: "Enter new character name (Fictional / Real-world):", namePlaceholder: "e.g. BeruangTidur, Vegeta, Goku, Einstein...",
+        errConnMsg: "⚠️ **Connection Failed.** API Key is not set or invalid.\n\nPlease get your official API Key at [Google AI Studio](https://aistudio.google.com/api-keys) and enter it via the 🔑 **Custom API Key** menu.",
+        musicTitle: "Cozy Music & Spotify Search", musicStreamLabel: "Royalty-Free Cozy Streams:", musicSearchLabel: "Search Music on Spotify:", musicSearchPlaceholder: "Enter song title or artist...", musicSearchBtn: "Search", musicRandomBtn: "🎲 Random Spotify Playlist", musicDoneBtn: "Done",
+        optLofi: "☕ Lofi Cozy Chill", optPiano: "🎹 Soft Piano Cozy", optRain: "🌧️ Rainy Cafe Ambience", optNight: "🌙 Night Chill Out", optOff: "🔇 Mute Audio Stream",
+        supportUs: "Support Us ☕", changeTheme: "🎲 Change Theme", modeWeb: "🌐 Web", modeImage: "🖼️ Image",
+        keyTitle: "Gemini API Key", keyReset: "Reset", imgSelected: "Selected image", audioAuto: "🔊 Audio: Automatic"
+    },
+    id: { 
+        placeholder: "Tulis pesan untuk ", hint: "Tekan <b>/</b> untuk Buka/Tutup Chat", 
+        modalTitle: "Ubah Kepribadian AI", modalLabel: "Instruksi sifat/latar belakang khusus AI:", cancel: "Batal", save: "Simpan", keyDesc: "Masukkan API Key Gemini pribadi Anda:", typing: " sedang mengetik...", errConn: "Koneksi gagal.",
+        nameTitle: "Ubah Nama Karakter", nameLabel: "Masukkan nama karakter baru (Fiktif / Tokoh Dunia):", namePlaceholder: "Contoh: BeruangTidur, Vegeta, Goku, Einstein...",
+        errConnMsg: "⚠️ **Koneksi Gagal.** Kunci API belum diatur atau tidak valid.\n\nSilakan dapatkan API Key resmi Anda di [Google AI Studio](https://aistudio.google.com/api-keys) lalu masukkan melalui menu 🔑 **Custom API Key**.",
+        musicTitle: "Cozy Music & Spotify Search", musicStreamLabel: "Streaming Musik Santai Bebas Hak Cipta:", musicSearchLabel: "Cari Musik di Spotify:", musicSearchPlaceholder: "Masukkan judul lagu atau artis...", musicSearchBtn: "Cari", musicRandomBtn: "🎲 Random Spotify Playlist", musicDoneBtn: "Selesai",
+        optLofi: "☕ Lofi Cozy Chill", optPiano: "🎹 Soft Piano Cozy", optRain: "🌧️ Rainy Cafe Ambience", optNight: "🌙 Night Chill Out", optOff: "🔇 Mute Audio Stream",
+        supportUs: "Dukung Kami ☕", changeTheme: "🎲 Ganti Tema", modeWeb: "🌐 Web", modeImage: "🖼️ Gambar",
+        keyTitle: "Kunci API Gemini", keyReset: "Atur Ulang", imgSelected: "Gambar terpilih", audioAuto: "🔊 Audio: Otomatis"
+    },
+    ja: { 
+        placeholder: "メッセージを入力... ", hint: "<b>/</b> キーでチャットを開閉", 
+        modalTitle: "AI性格設定", modalLabel: "AIのプロンプト/性格指示を入力:", cancel: "キャンセル", save: "保存", keyDesc: "Gemini APIキーを入力:", typing: " が入力中...", errConn: "接続に失敗しました。",
+        nameTitle: "キャラクター名の変更", nameLabel: "新しいキャラクター名を入力（架空／実在）:", namePlaceholder: "例: BeruangTidur, 悟空, アインシュタイン...",
+        errConnMsg: "⚠️ **接続失敗。** APIキーが設定されていないか、無効です。\n\n[Google AI Studio](https://aistudio.google.com/api-keys) で公式APIキーを取得し、🔑 **Custom API Key** メニューから入力してください。",
+        musicTitle: "Cozy Music & Spotify 検索", musicStreamLabel: "著作権フリーBGMストリーム:", musicSearchLabel: "Spotifyで音楽を検索:", musicSearchPlaceholder: "曲名やアーティストを入力...", musicSearchBtn: "検索", musicRandomBtn: "🎲 ランダム Spotify プレイリスト", musicDoneBtn: "完了",
+        optLofi: "☕ Lofi Cozy Chill", optPiano: "🎹 Soft Piano Cozy", optRain: "🌧️ Rainy Cafe Ambience", optNight: "🌙 Night Chill Out", optOff: "ミュート",
+        supportUs: "支援する ☕", changeTheme: "🎲 テーマ変更", modeWeb: "🌐 ウェブ", modeImage: "🖼️ 画像",
+        keyTitle: "Gemini APIキー", keyReset: "リセット", imgSelected: "選択された画像", audioAuto: "🔊 音声: 自動"
+    },
+    zh: { 
+        placeholder: "发送消息给 ", hint: "按 <b>/</b> 键打开/关闭聊天", 
+        modalTitle: "编辑人设", modalLabel: "设置自定义AI性格指示:", cancel: "取消", save: "保存", keyDesc: "输入您的 Gemini API 密钥:", typing: " 正在输入...", errConn: "连接失败。",
+        nameTitle: "修改角色名称", nameLabel: "输入新角色名称（虚构 / 真实人物）:", namePlaceholder: "例如: BeruangTidur, 孙悟空, 爱因斯坦...",
+        errConnMsg: "⚠️ **连接失败。** API 密钥未设置或无效。\n\n请前往 [Google AI Studio](https://aistudio.google.com/api-keys) 获取您的官方 API 密钥，并通过 🔑 **Custom API Key** 菜单输入。",
+        musicTitle: "Cozy Music & Spotify 搜索", musicStreamLabel: "免版税轻松背景音乐:", musicSearchLabel: "在 Spotify 上搜索音乐:", musicSearchPlaceholder: "输入歌曲名称或歌手...", musicSearchBtn: "搜索", musicRandomBtn: "🎲 随机 Spotify 歌单", musicDoneBtn: "完成",
+        optLofi: "☕ Lofi Cozy Chill", optPiano: "🎹 Soft Piano Cozy", optRain: "🌧️ Rainy Cafe Ambience", optNight: "🌙 Night Chill Out", optOff: "🔇 静音",
+        supportUs: "支持我们 ☕", changeTheme: "🎲 切换主题", modeWeb: "🌐 网页", modeImage: "🖼️ 图片",
+        keyTitle: "Gemini API 密钥", keyReset: "重置", imgSelected: "已选图片", audioAuto: "🔊 语音: 自动"
+    },
+    es: { 
+        placeholder: "Escribe un mensaje para ", hint: "Presiona <b>/</b> para Abrir/Cerrar Chat", 
+        modalTitle: "Editar Personalidad", modalLabel: "Instrucciones de personalidad para AI:", cancel: "Cancelar", save: "Guardar", keyDesc: "Ingrese su clave API de Gemini:", typing: " está escribiendo...", errConn: "Error de conexión.",
+        nameTitle: "Cambiar Nombre del Personaje", nameLabel: "Ingrese el nuevo nombre (Ficticio / Real):", namePlaceholder: "Ej: BeruangTidur, Goku, Einstein...",
+        errConnMsg: "⚠️ **Conexión fallida.** La clave API no está configurada o no es válida.\n\nObtenga su clave API oficial en [Google AI Studio](https://aistudio.google.com/api-keys) e ingrésela a través del menú 🔑 **Custom API Key**.",
+        musicTitle: "Cozy Music & Búsqueda en Spotify", musicStreamLabel: "Streams Relajantes Sin Copyright:", musicSearchLabel: "Buscar Música en Spotify:", musicSearchPlaceholder: "Ingrese canción o artista...", musicSearchBtn: "Buscar", musicRandomBtn: "🎲 Playlist Aleatoria de Spotify", musicDoneBtn: "Listo",
+        optLofi: "☕ Lofi Cozy Chill", optPiano: "🎹 Soft Piano Cozy", optRain: "🌧️ Rainy Cafe Ambience", optNight: "🌙 Night Chill Out", optOff: "🔇 Silenciar Stream",
+        supportUs: "Apóyanos ☕", changeTheme: "🎲 Cambiar Tema", modeWeb: "🌐 Web", modeImage: "🖼️ Imagen",
+        keyTitle: "Clave API de Gemini", keyReset: "Restablecer", imgSelected: "Imagen seleccionada", audioAuto: "🔊 Audio: Automático"
+    }
+};
+
+        const emojis = ['😊', '😂', '🙄', '😡', '😭', '😱', '🤗', '🤯', '😎', '😅', '😀', '🤨', '😨', '😑', '🤔', '🤫', '🤪', '🤤', '😳', '🤓', '💀', '💔', '💕', '🗿', '🔥', '✨', '🎉', '👍', '👎', '🙏', '👏', '👀', '🥳', '😴', '💩', '🤡', '⚡', '🌹', '☕', '🎮', '❤️', '🖤', '👑', '🐶', '🐱', 'ghost', '🍕', '🎶'];
+
+        const cozyAudioStreams = {
+            lofi: "https://stream.zeno.fm/f3wvbbqmdg8uv",
+            piano: "https://stream.zeno.fm/0r0xa792kwzuv",
+            rain: "https://stream.zeno.fm/5p1730cf18quv",
+            night: "https://stream.zeno.fm/8361m35038quv"
+        };
+
+        const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+        /* --- UTILITY & HELPER FUNCTIONS --- */
+        function playSfxSend() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if (ctx.state === 'suspended') ctx.resume();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine'; 
+        osc.frequency.setValueAtTime(800, ctx.currentTime);
+        gain.gain.setValueAtTime(0.1, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.08);
+        osc.connect(gain); 
+        gain.connect(ctx.destination);
+        osc.start(); 
+        osc.stop(ctx.currentTime + 0.08);
+    } catch(e){}
+}
+
+function playSfxReceive() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if (ctx.state === 'suspended') ctx.resume();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle'; 
+        osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.15);
+        osc.connect(gain); 
+        gain.connect(ctx.destination);
+        osc.start(); 
+        osc.stop(ctx.currentTime + 0.15);
+    } catch(e){}
+}
+
+        function handleImageError(imgElem) {
+            if (!imgElem.src.includes('assets/none.png')) {
+                imgElem.src = "assets/none.png";
+            }
+        }
+
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = error => reject(error);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function updateClock() {
+            const now = new Date();
+            const dateString = now.toLocaleDateString(currentLang, {
+                weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
+            });
+            const timeString = now.toLocaleTimeString([], { hour12: false });
+            document.getElementById('digital-clock').innerText = `📅 ${dateString} | 🕒 ${timeString}`;
+        }
+
+        function validateAndCleanName(inputName) {
+            if (!inputName || !inputName.trim()) return { isValid: false, message: "Nama tidak boleh kosong." };
+
+            var c = inputName.trim();
+            var l = c.toLowerCase().replace(/[-_.,'"]/g, ' ').replace(/\s+/g, ' ');
+
+            var bannedList = [
+            "allah", "tuhan", "god", "jesus", "yesus", "dewa", "dewi", "lord", "yahweh", "YHWH", "jehova", "elohim",
+            "jibril", "mikail", "israfil", "izrail", "munkar", "nakir", "raqib", "atid", "malik", "ridwan", 
+            "gabriel", "michael", "raphael", "uriel", "azrael", "ariel", "chamuel", "jophiel", "zadkiel", 
+            "metatron", "sariel", "remiel", "lucifer", "israfel",
+            "muhammad", "muhamad", "mohammad", "mohammed", "mohamed", "muhamed", "mahammad", 
+            "mehmet", "mehmed", "mahomet", "mamadou", "mahamad", "mohamet", "muhammet",
+            "adam", "idris", "nuh", "hud", "sholeh", "ibrahim", "luth", "ismail", "ishaq", "yaqub", "yusuf", 
+            "ayub", "syuaib", "musa", "harun", "dzulkifli", "daud", "sulaiman", "ilyas", "ilyasa", "yunus", 
+            "zakaria", "yahya", "isa", "abraham", "noah", "moses", "david", "solomon", "jacob", 
+            "joseph", "elijah", "job", "jonah", "aaron", "isaac", "ezequiel", "daniel", "samuel", "joshua",
+            "bakar", "umar", "utsman", "usman", "ali", "khaththab", "affan", "thalib", "zubair", "awwam",
+            "talhah", "ubaidah", "sa'ad", "waqqas", "saeed", "zaid", "abdurrahman", "auf", "bilal", "rabah",
+            "salman", "al-farisi", "amr", "ash", "khalid", "walid", "hamzah", "abbas", "muthalib", "mu'adz",
+            "jabal", "ubay", "ka'ab", "arqo", "arqam", "anwar", "abu_bakarr", "abubakar",
+            "khadijah", "saudah", "aisyah", "hafsah", "zainab", "khuzaimah", "ummu_salamah", "hindun", 
+            "juwairiyah", "ummu_habibah", "ramlah", "shofiyah", "maimunah", "mariyah", "qibthiyah",
+            "bukhori", "bukhari", "muslim", "tirmidzi", "nasai", "abu_daud", "ibnu_majah", "ahmad", 
+            "hambal", "malik", "anas", "darimi", "baihaqi", "thabrani",
+            "israel",
+            "osama", "bin_laden", "laden", "al-baghdadi", "baghdadi", "al-zarqawi", "zarqawi", "ayman", 
+            "al-zawahiri", "zawahiri", "imron_by", "amrozi", "imam_samudra", "mukhlas", "azahari", "noordin", 
+            "top", "hambali", "santoso", "ali_kalora", "patek",
+            "kontol", "memek", "ngentot", "bangsat", "anjing", "babi", "goblok", "tolol", "bgst", "peler", 
+            "pantek", "jancok", "bajingan", "asu", "itil", "ngewe", "jembut", "fuck", "bitch", "asshole",
+            "nigga", "nigger", "cina", "chink", "kafir", "indog", "malingsia", "sex", "porn", "bokep", "dick", 
+	    "pussy", "boobs", "dickhead", "idiot", "dumb", "dumbass"
+            ];
+
+            var isBanned = bannedList.some(function(badWord) {
+                var pattern = new RegExp('\\b' + badWord + '\\b', 'i');
+                return pattern.test(l) || pattern.test(l.replace(/\s+/g, ''));
+            });
+
+            if (isBanned) {
+                return {
+                    isValid: false,
+                    message: "Nama tersebut tidak diperbolehkan demi menjaga norma, etika, dan kenyamanan penggunaan."
+                };
+            }
+
+            return { isValid: true, cleanedName: c };
+        }
+
+        /* --- AUDIO & BGM FUNCTIONS --- */
+        function changeCozyAudioTrack(genre) {
+            const player = document.getElementById('cozy-audio-player');
+            const btnBgm = document.getElementById('btn-bgm');
+            
+            if (genre === 'off') {
+                player.pause();
+                if (btnBgm) btnBgm.style.opacity = "0.5";
+            } else if (cozyAudioStreams[genre]) {
+                player.src = cozyAudioStreams[genre];
+                player.load();
+                player.play().then(() => {
+                    if (btnBgm) btnBgm.style.opacity = "1.0";
+                }).catch(err => {
+                    console.log("Autoplay terhalang interaksi pengguna:", err);
+                });
+            }
+        }
+
+        function changeCozyVolume(val) {
+            const player = document.getElementById('cozy-audio-player');
+            const volumeText = document.getElementById('volume-value-text');
+            if (player) {
+                player.volume = val;
+            }
+            if (volumeText) {
+                volumeText.innerText = Math.round(val * 100) + '%';
+            }
+        }
+
+        function searchAndPlaySpotify() {
+            const query = document.getElementById('music-search-input').value.trim();
+            if (!query) return;
+
+            changeCozyAudioTrack('off');
+            document.getElementById('select-bgm-style').value = 'off';
+
+            if (query.includes('spotify.com')) {
+                const playerContainer = document.getElementById('player-container');
+                const iframe = document.getElementById('embedded-music-player');
+                playerContainer.style.display = 'block';
+                let cleanUrl = query.replace("open.spotify.com/", "open.spotify.com/embed/");
+                iframe.src = cleanUrl;
+            } else {
+                const spotifySearchUrl = `https://open.spotify.com/search/${encodeURIComponent(query)}`;
+                openInSideTab(spotifySearchUrl);
+            }
+        }
+
+        function playRandomSpotify() {
+            const playerContainer = document.getElementById('player-container');
+            const iframe = document.getElementById('embedded-music-player');
+            playerContainer.style.display = 'block';
+
+            changeCozyAudioTrack('off');
+            document.getElementById('select-bgm-style').value = 'off';
+
+            const playlists = [
+                "https://open.spotify.com/embed/playlist/37i9dQZF1DX8Ueb123m9P2",
+                "https://open.spotify.com/embed/playlist/37i9dQZF1DX4WYpdgoIcn6"
+            ];
+            const randomPl = playlists[Math.floor(Math.random() * playlists.length)];
+            iframe.src = randomPl;
+        }
+
+        function initAutoplay() {
+            if (autoPlayInitialized) return;
+            autoPlayInitialized = true;
+            changeCozyAudioTrack('lofi');
+        }
+
+        /* --- UI & NAVIGATION FUNCTIONS --- */
+        function switchSearchMode(mode) {
+            currentSearchMode = mode;
+            document.getElementById('btn-mode-text').classList.toggle('active', mode === 'text');
+            document.getElementById('btn-mode-image').classList.toggle('active', mode === 'image');
+            updateSideTabFrame();
+        }
+
+        let sideTabHistory = [];
+
+        function navigateSideTab(url) {
+            const iframe = document.getElementById("iframe-google-side");
+            const link = document.getElementById('link-google-side');
+
+            if (url.includes("aistudio.google.com") || url.includes("youtube.com") || url.includes("youtu.be")) {
+                window.open(url, '_blank');
+                return;
+            }
+
+            if (sideTabHistory.length === 0 || sideTabHistory[sideTabHistory.length - 1] !== url) {
+                sideTabHistory.push(url);
+            }
+
+            if (iframe) iframe.src = url;
+            if (link) link.href = url;
+        }
+
+        function sideTabGoBack() {
+            const iframe = document.getElementById("iframe-google-side");
+            try {
+                iframe.contentWindow.history.back();
+            } catch (e) {
+                if (sideTabHistory.length > 1) {
+                    sideTabHistory.pop();
+                    const previousUrl = sideTabHistory[sideTabHistory.length - 1];
+                    iframe.src = previousUrl;
+                    document.getElementById('link-google-side').href = previousUrl;
+                }
+            }
+        }
+
+        function sideTabReload() {
+            const iframe = document.getElementById("iframe-google-side");
+            const parent = iframe.parentNode;
+            const nextSib = iframe.nextSibling;
+            
+            parent.removeChild(iframe);
+            parent.insertBefore(iframe, nextSib);
+        }
+
+        function sideTabOpenNewTab() {
+            const iframe = document.getElementById("iframe-google-side");
+            if (iframe.src && iframe.src !== "about:blank") {
+                window.open(iframe.src, '_blank');
+            }
+        }
+
+        function openInSideTab(url) {
+    const sideIframe = document.getElementById("iframe-google-side");
+    const link = document.getElementById('link-google-side');
+
+    // Tambahkan domain itch.io dan vgen.co ke dalam pengecualian
+    if (url.includes("aistudio.google.com") || 
+        url.includes("youtube.com") || 
+        url.includes("youtu.be") || 
+        url.includes("itch.io") || 
+        url.includes("vgen.co")) {
+        window.open(url, '_blank');
+        return;
+    }
+
+    if (sideIframe) {
+        sideIframe.src = url;
+    }
+    if (link) {
+        link.href = url;
+    }
+}
+
+        function updateSideTabFrame() {
+            const encodedName = encodeURIComponent(currentName);
+            const targetUrl = currentSearchMode === 'image' 
+                ? `https://www.google.com/search?tbm=isch&q=${encodedName}&igu=1`
+                : `https://www.google.com/search?q=${encodedName}&igu=1`;
+
+            navigateSideTab(targetUrl);
+        }
+
+        function autoTriggerSideTab(query, mode = 'image') {
+            const encodedQuery = encodeURIComponent(query);
+            currentSearchMode = mode;
+
+            document.getElementById('btn-mode-text').classList.toggle('active', mode === 'text');
+            document.getElementById('btn-mode-image').classList.toggle('active', mode === 'image');
+
+            const targetUrl = mode === 'image'
+                ? `https://www.google.com/search?tbm=isch&q=${encodedQuery}&igu=1`
+                : `https://www.google.com/search?q=${encodedQuery}&igu=1`;
+
+            navigateSideTab(targetUrl);
+        }
+
+        function updateUI() {
+    const t = i18n[currentLang];
+    document.getElementById('ui-name').innerText = currentName;
+    document.getElementById('chat-input').placeholder = `${t.placeholder}${currentName}...`;
+    document.getElementById('toggle-hint').innerHTML = t.hint;
+
+    document.getElementById('tab-search-title').innerText = currentName;
+    updateSideTabFrame();
+
+    const imgElem = document.getElementById('ui-avatar-img');
+    imgElem.onerror = function() { handleImageError(this); };
+
+    const exactKey = Object.keys(originalCharacterImages).find(
+        k => k.toLowerCase() === currentName.trim().toLowerCase()
+    );
+
+    if (exactKey) {
+        imgElem.src = encodeURI(originalCharacterImages[exactKey]);
+    } else {
+        imgElem.src = `image/${encodeURIComponent(currentName)}.png`;
+    }
+
+    // Terjemahan Modal Personality
+    document.getElementById('i18n-modal-title').innerText = t.modalTitle;
+    document.getElementById('i18n-modal-label').innerText = t.modalLabel;
+    document.getElementById('i18n-cancel').innerText = t.cancel;
+    document.getElementById('i18n-save').innerText = t.save;
+
+    // Terjemahan Modal Name Edit
+    document.getElementById('i18n-name-title').innerText = t.nameTitle;
+    document.getElementById('i18n-name-label').innerText = t.nameLabel;
+    document.getElementById('input-char-name').placeholder = t.namePlaceholder;
+    document.getElementById('i18n-name-cancel').innerText = t.cancel;
+    document.getElementById('i18n-name-save').innerText = t.save;
+
+    // Terjemahan Modal API Key
+    document.getElementById('i18n-key-title').innerText = t.keyTitle;
+    document.getElementById('i18n-key-desc').innerText = t.keyDesc;
+    document.getElementById('i18n-key-reset').innerText = t.keyReset;
+    document.getElementById('i18n-key-cancel').innerText = t.cancel;
+    document.getElementById('i18n-key-save').innerText = t.save;
+
+    // Terjemahan Modal Music
+    document.getElementById('i18n-music-title').innerText = t.musicTitle;
+    document.getElementById('i18n-music-stream-label').innerText = t.musicStreamLabel;
+    document.getElementById('i18n-music-search-label').innerText = t.musicSearchLabel;
+    document.getElementById('music-search-input').placeholder = t.musicSearchPlaceholder;
+    document.getElementById('i18n-music-search-btn').innerText = t.musicSearchBtn;
+    document.getElementById('i18n-music-random-btn').innerText = t.musicRandomBtn;
+    document.getElementById('i18n-music-done-btn').innerText = t.musicDoneBtn;
+
+    document.getElementById('i18n-opt-lofi').innerText = t.optLofi;
+    document.getElementById('i18n-opt-piano').innerText = t.optPiano;
+    document.getElementById('i18n-opt-rain').innerText = t.optRain;
+    document.getElementById('i18n-opt-night').innerText = t.optNight;
+    document.getElementById('i18n-opt-off').innerText = t.optOff;
+
+    // Terjemahan Tombol Eksternal
+    document.getElementById('btn-change-bg').innerText = t.changeTheme;
+    document.getElementById('btn-support-us').innerText = t.supportUs;
+    document.getElementById('btn-mode-text').innerText = t.modeWeb;
+    document.getElementById('btn-mode-image').innerText = t.modeImage;
+
+    // Terjemahan Image Preview Label
+    const imagePreviewLabel = document.getElementById('image-preview-name');
+    if (imagePreviewLabel && imagePreviewLabel.innerText === 'Gambar terpilih') {
+        imagePreviewLabel.innerText = t.imgSelected;
+    }
+
+    // Terjemahan Audio Auto Select
+    const audioAutoElem = document.getElementById('i18n-audio-auto');
+    if (audioAutoElem) {
+        audioAutoElem.innerText = t.audioAuto;
+    }
+
+    updateClock();
+}
+
+        function changeLanguage(langKey) {
+    currentLang = langKey;
+    
+    // 1. Sinkronkan nilai dropdown PC dan Mobile agar tetap selaras
+    const pcSelect = document.getElementById('lang-select');
+    const mobileSelect = document.getElementById('lang-select-mobile');
+
+    if (pcSelect) pcSelect.value = langKey;
+    if (mobileSelect) mobileSelect.value = langKey;
+
+    // 2. Jalankan pembaruan UI bawaan Anda
+    updateUI();
+}
+
+function changeTheme(themeKey) {
+    document.body.setAttribute('data-theme', themeKey);
+    localStorage.setItem('user_app_theme', themeKey);
+}
+
+        function initEmojiPicker() {
+            const panel = document.getElementById('emoji-panel');
+            panel.innerHTML = '';
+            emojis.forEach(e => {
+                const span = document.createElement('span');
+                span.innerText = e;
+                span.onclick = () => {
+                    const input = document.getElementById('chat-input');
+                    input.value += e; panel.style.display = 'none'; input.focus();
+                };
+                panel.appendChild(span);
+            });
+        }
+
+        function toggleEmoji() {
+            const panel = document.getElementById('emoji-panel');
+            panel.style.display = (panel.style.display === 'grid') ? 'none' : 'grid';
+        }
+
+        function parseMessageFormatting(text) {
+            let formatted = text.replace(/\[SHOW_IMAGE:(.*?)\]/g, (match, imageKey) => {
+                const cleanKey = imageKey.trim();
+                if (localImageMap[cleanKey]) {
+                    return `<img src="${localImageMap[cleanKey]}" alt="${cleanKey}" onerror="handleImageError(this)">`;
+                }
+                return '';
+            });
+
+            formatted = formatted.replace(/!\[(.*?)\]\((.*?)\)/g, '<img src="$2" alt="$1" onerror="handleImageError(this)">');
+            formatted = formatted.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+            const rawUrlPattern = /(?<!src="|href=")(https?:\/\/[^\s<]+)/g;
+            formatted = formatted.replace(rawUrlPattern, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+            return formatted;
+        }
+
+        function appendMessage(sender, text, isTyping = false) {
+            const log = document.getElementById('chat-log');
+            const msg = document.createElement('div');
+            if (isTyping) {
+                msg.className = 'msg typing'; msg.id = 'typing-indicator';
+                msg.innerText = `${currentName}${i18n[currentLang].typing}`;
+                log.appendChild(msg); log.scrollTop = log.scrollHeight; return;
+            }
+
+            const typingElem = document.getElementById('typing-indicator');
+            if (typingElem) typingElem.remove();
+
+            msg.className = `msg ${sender}`;
+            const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            const parsedText = parseMessageFormatting(text);
+            msg.innerHTML = `<div>${parsedText}</div><div class="time">${timeStr}</div>`;
+            log.appendChild(msg); log.scrollTop = log.scrollHeight;
+        }
+
+        function triggerFallbackError() {
+            const typingElem = document.getElementById('typing-indicator');
+            if (typingElem) typingElem.remove();
+
+            if (chatHistory.length > 0 && chatHistory[chatHistory.length - 1].role === "user") {
+                chatHistory.pop();
+            }
+
+            const activeI18n = i18n[currentLang] || i18n.id;
+            const fallbackMsg = activeI18n.errConnMsg;
+
+            appendMessage('ai', fallbackMsg);
+            openInSideTab("https://aistudio.google.com/api-keys");
+        }
+
+        function clearLog() { 
+            document.getElementById('chat-log').innerHTML = ''; 
+            chatHistory = [];
+        }
+
+        function toggleChatWindow() {
+    const app = document.getElementById('chat-app');
+    const supportBtn = document.querySelector('.support-btn');
+    const themeBtn = document.querySelector('.theme-btn');
+
+    // 1. Toggle class minimized pada container chat
+    app.classList.toggle('minimized');
+    const isMinimized = app.classList.contains('minimized');
+
+    // 2. Samakan status sembunyi/tampil tombol support & theme
+    if (supportBtn) {
+        supportBtn.style.display = isMinimized ? 'none' : 'inline-flex';
+    }
+    if (themeBtn) {
+        themeBtn.style.display = isMinimized ? 'none' : 'inline-flex';
+    }
+
+    // 3. Auto-focus ke kolom input jika chat dibuka kembali
+    if (!isMinimized) {
+        const chatInput = document.getElementById('chat-input');
+        if (chatInput) chatInput.focus();
+    }
+}
+
+        /* --- MODAL CONTROL FUNCTIONS --- */
+        function openNameEditModal() {
+            document.getElementById('input-char-name').value = currentName;
+            document.getElementById('name-modal').style.display = 'flex';
+        }
+
+        function openPersonalityModal() {
+            document.getElementById('input-personality').value = currentPersonality;
+            document.getElementById('personality-modal').style.display = 'flex';
+        }
+
+        function openMusicModal() { document.getElementById('music-modal').style.display = 'flex'; }
+        
+        function openApiKeyModal() {
+            document.getElementById('input-user-apikey').value = customApiKey;
+            document.getElementById('apikey-modal').style.display = 'flex';
+        }
+
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        async function saveCharacterName() {
+            const rawName = document.getElementById('input-char-name').value;
+            const validation = validateAndCleanName(rawName);
+
+            if (!validation.isValid) {
+                alert(validation.message);
+                return;
+            }
+
+            currentName = validation.cleanedName;
+            updateUI();
+            closeModal('name-modal');
+            await fetchCharacterInfoWithAI(currentName);
+        }
+
+        function savePersonality() {
+            currentPersonality = document.getElementById('input-personality').value.trim();
+            closeModal('personality-modal');
+        }
+
+        function saveApiKey() {
+            const val = document.getElementById('input-user-apikey').value.trim();
+            customApiKey = val;
+            if (val) localStorage.setItem('user_gemini_apikey', val);
+            else localStorage.removeItem('user_gemini_apikey');
+            closeModal('apikey-modal');
+        }
+
+        function resetApiKey() {
+            document.getElementById('input-user-apikey').value = "";
+            customApiKey = "";
+            localStorage.removeItem('user_gemini_apikey');
+            closeModal('apikey-modal');
+        }
+
+        /* --- IMAGE SELECTION & UPLOAD HANDLERS --- */
+        function handleImageSelection(input) {
+            const previewContainer = document.getElementById('image-preview-container');
+            const previewThumb = document.getElementById('image-preview-thumb');
+            const previewName = document.getElementById('image-preview-name');
+            const btnUpload = document.getElementById('btn-upload-img');
+
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                previewThumb.src = URL.createObjectURL(file);
+                previewName.innerText = file.name;
+                previewContainer.style.display = 'flex';
+                btnUpload.style.color = '#2563eb';
+            } else {
+                clearSelectedImage();
+            }
+        }
+
+        function clearSelectedImage() {
+            const fileInput = document.getElementById('imageInput');
+            const previewContainer = document.getElementById('image-preview-container');
+            const btnUpload = document.getElementById('btn-upload-img');
+
+            fileInput.value = '';
+            previewContainer.style.display = 'none';
+            btnUpload.style.color = '#64748b';
+        }
+
+        function handleSendAction() {
+            const fileInput = document.getElementById('imageInput');
+            if (fileInput.files.length > 0) {
+                sendImageAndText();
+            } else {
+                sendMessage();
+            }
+        }
+
+        /* --- MODEL FALLBACK CONFIGURATION --- */
+const geminiModels = [
+    "gemini-3.5-flash",
+    "gemini-3-flash-preview",
+    "gemini-2.5-flash",
+    "gemini-2.0-flash"
+];
+
+/* --- API CALL WITH FALLBACK & KEY ROTATION --- */
+async function callGeminiApi(requestBody) {
+    let activeKeysList = customApiKey ? [customApiKey] : defaultApiKeys;
+
+    for (let i = 0; i < activeKeysList.length; i++) {
+        const keyIdx = (currentApiKeyIndex + i) % activeKeysList.length;
+        const apiKeyToUse = activeKeysList[keyIdx];
+
+        for (let m = 0; m < geminiModels.length; m++) {
+            const modelName = geminiModels[m];
+            
+            const apiVersion = modelName.includes("3.5") ? "v1" : "v1beta";
+            const url = `https://generativelanguage.googleapis.com/${apiVersion}/models/${modelName}:generateContent?key=${apiKeyToUse}`;
+
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
+
+		const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+                if (res.status === 429) {
+    		    console.warn(`[Quota Exceeded] Model ${geminiModels[m]} terkena limit. Menunggu 1 detik...`);
+    		    await sleep(1000); // Menunda 1 detik sebelum mencoba berikutnya
+    		    continue;
+		}
+
+                const data = await res.json();
+
+                if (data.error && (data.error.code === 429 || data.error.status === "RESOURCE_EXHAUSTED")) {
+                    console.warn(`[Resource Exhausted] Model: ${modelName} (${apiVersion}) | Key Index: ${keyIdx}. Coba model selanjutnya...`);
+                    continue;
+                }
+
+                if (res.ok && data.candidates && data.candidates[0].content) {
+                    currentApiKeyIndex = keyIdx;
+                    return { success: true, data: data, modelUsed: modelName };
+                }
+            } catch (err) {
+                console.error(`[Network/Fetch Error] Model: ${modelName} (${apiVersion}) | Key Index: ${keyIdx}`, err);
+            }
+        }
+    }
+
+    return { success: false };
+}
+
+/* --- REFACTORED FUNCTIONS USING THE FALLBACK SYSTEM --- */
+
+async function fetchCharacterInfoWithAI(name) {
+    const lower = name.toLowerCase().trim();
+
+    for (const key in characterDatabase) {
+        if (lower.includes(key.toLowerCase()) || key.toLowerCase().includes(lower)) {
+            detectedAge = characterDatabase[key].age;
+            currentPersonality = characterDatabase[key].persona;
+            return;
+        }
+    }
+
+    currentPersonality = "";
+
+    const extractPrompt = `Identify the character or famous person named "${name}". Return ONLY a JSON object in this exact format: {"age": number_or_null, "description": "short 1-sentence persona"}. If they are a known character/person, provide their lore-accurate/typical age and persona. If unknown, age should be null.`;
+
+    const requestBody = {
+        contents: [{ parts: [{ text: extractPrompt }] }]
+    };
+
+    const result = await callGeminiApi(requestBody);
+    if (result.success) {
+        try {
+            const responseText = result.data.candidates[0].content.parts[0].text;
+            const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                const parsed = JSON.parse(jsonMatch[0]);
+                detectedAge = parsed.age;
+                if (parsed.description) {
+                    currentPersonality = parsed.description;
+                }
+            }
+        } catch (e) {
+            console.error("Extraction Parsing Error:", e);
+        }
+    }
+}
+
+async function sendMessage() {
+    const input = document.getElementById('chat-input');
+    const text = input.value.trim();
+    if (!text || isSending) return;
+
+    input.value = '';
+    document.getElementById('emoji-panel').style.display = 'none';
+    playSfxSend();
+    appendMessage('player', text);
+    appendMessage('system', '', true);
+
+    isSending = true;
+
+    const langInstructions = {
+        en: "Reply in English.", id: "Balas dalam Bahasa Indonesia.",
+        ja: "日本語で返答してください。", zh: "请用中文回复。", es: "Responde en español."
+    };
+
+    let basePersona = `Roleplay as ${currentName}. Emulate their accurate personality traits, speech patterns, and lore accurately.`;
+    let personaPrompt = currentPersonality 
+        ? `Character Persona & Background Instructions: ${currentPersonality}`
+        : basePersona;
+
+    let ageContext = detectedAge ? `AGE CONTEXT: You are ${detectedAge} years old in your universe.` : "";
+
+    // KODE BARU (Tanggal + Jam):
+const now = new Date();
+const dateString = now.toLocaleDateString('en-US', { 
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+});
+const timeString = now.toLocaleTimeString([], { hour12: false }); // Mengambil jam:menit:detik
+
+const timeContext = `CURRENT TIME & DATE: ${dateString}, ${timeString}`;
+
+    const sideTabInstruction = `SIDE TAB CONTROL:
+1. Jika pengguna meminta untuk melihat gambar, karakter, lokasi, atau visual tertentu, jangan kirim gambar/link di pesan. Cukup tambahkan perintah [SEARCH_IMAGE: kata_kunci] di akhir balasanmu. Jangan menolak dan jangan mencoba membuat/menggenerasi gambar di dalam chat. Alih-alih menolak, arahkan pengguna dengan sopan bahwa hasilnya dapat dilihat pada "Tab Gambar/Web" (misalnya: 'Anda dapat melihat gambarnya pada Tab Gambar. Jika menggunakan ponsel, pastikan layar diputar ke mode miring/landscape untuk melihatnya.'). Jangan menggunakan kata "di bagian samping" secara kaku.
+
+2. Jika pengguna meminta informasi web, artikel, atau link luar, tambahkan perintah [SEARCH_WEB: kata_kunci] di akhir balasanmu. Jangan menolak. Arahkan pengguna untuk mengecek hasil pencarian di Tab Web (misalnya: 'Hasil pencarian mengenai [Topik] sudah tersedia di Tab Web').
+
+3. Dalam website ini terdapat Iklan kecil seperti Game dan Komisi Gambar (dari Pemilik Website).
+
+4. Jika Pengguna Bertanya Apakah Karakternya Ai nya bisa diganti atau pertanyaan semacam itu, maka Kamu bisa menjawab: Klik bagian Foto Profil dan Ubah Nama sesuka hatimu (tapi ada beberapa nama yang di-banned, tolong beritahu pengguna dengan baik).
+
+Contoh Respon Gambar: "Tentu, ini dia penampakan kotanya! Silakan cek Tab Gambar (putar layar HP ke landscape jika kamu menggunakan ponsel). [SEARCH_IMAGE: Special Town RPG]"`;
+
+    const systemInstruction = `Instruction: You are ${currentName}. ${personaPrompt}
+${ageContext}
+${timeContext}
+${sideTabInstruction}
+LANGUAGE: ${langInstructions[currentLang]}
+STRICT RULE: MAXIMUM 2 SENTENCES PER RESPONSE. Use emojis occasionally.`;
+
+    chatHistory.push({ role: "user", parts: [{ text: text }] });
+
+    if (chatHistory.length > 10) {
+        chatHistory = chatHistory.slice(-10);
+    }
+
+    const requestBody = {
+        system_instruction: {
+            parts: [{ text: systemInstruction }]
+        },
+        contents: chatHistory,
+        generationConfig: { temperature: 0.85 }
+    };
+
+    const result = await callGeminiApi(requestBody);
+
+    if (result.success) {
+        let rawReply = result.data.candidates[0].content.parts[0].text.trim();
+
+        const imgMatch = rawReply.match(/\[SEARCH_IMAGE:\s*(.*?)\]/);
+        if (imgMatch) {
+            autoTriggerSideTab(imgMatch[1], 'image');
+            rawReply = rawReply.replace(imgMatch[0], '').trim();
+        }
+
+        const webMatch = rawReply.match(/\[SEARCH_WEB:\s*(.*?)\]/);
+        if (webMatch) {
+            autoTriggerSideTab(webMatch[1], 'text');
+            rawReply = rawReply.replace(webMatch[0], '').trim();
+        }
+
+        chatHistory.push({ role: "model", parts: [{ text: rawReply }] });
+        playSfxReceive();
+        appendMessage('ai', rawReply);
+
+	speakText(rawReply);
+    } else {
+        triggerFallbackError();
+    }
+
+    isSending = false;
+}
+
+async function sendImageAndText() {
+    const fileInput = document.getElementById('imageInput');
+    const file = fileInput.files[0];
+    const chatInput = document.getElementById('chat-input');
+    const promptText = chatInput.value.trim() || "Coba jelaskan apa isi gambar ini.";
+
+    if (!file || isSending) return;
+
+    try {
+        isSending = true;
+
+        // 1. Kompres gambar terlebih dahulu agar hemat kuota API
+        const compressedBase64DataUrl = await compressImage(file, 800, 800, 0.7);
+        const base64ImageOnly = compressedBase64DataUrl.split(',')[1];
+
+        // 2. Format tampilan UI: Hanya ikon & nama file (bukan gambar utuh)
+        const userMsgText = `🖼️ *[Gambar: ${file.name}]*\n${chatInput.value.trim()}`;
+        
+        playSfxSend();
+        appendMessage('player', userMsgText);
+        appendMessage('system', '', true);
+
+        chatInput.value = '';
+        clearSelectedImage();
+
+        const langInstructions = {
+            en: "Reply in English.", id: "Balas dalam Bahasa Indonesia.",
+            ja: "日本語で返答してください。", zh: "请用中文回复。", es: "Responde en español."
+        };
+
+        const instructionText = `You are ${currentName}. ${currentPersonality || ''}
+        LANGUAGE: ${langInstructions[currentLang]}
+        STRICT RULE: MAXIMUM 2 SENTENCES PER RESPONSE.
+        
+        User Query about image: ${promptText}`;
+
+        // 3. Kirim data terkompresi ke API Gemini
+        const requestBody = {
+            contents: [{
+                parts: [
+                    { text: instructionText },
+                    { inline_data: { mime_type: 'image/jpeg', data: base64ImageOnly } }
+                ]
+            }]
+        };
+
+        const result = await callGeminiApi(requestBody);
+
+        if (result.success) {
+            const aiResponse = result.data.candidates[0].content.parts[0].text;
+            playSfxReceive();
+            appendMessage('ai', aiResponse);
+            speakText(aiResponse);
+        } else {
+            triggerFallbackError();
+        }
+
+        isSending = false;
+
+    } catch (error) {
+        console.error("Detail Error:", error);
+        triggerFallbackError();
+        isSending = false;
+    }
+}
+
+        /* --- GLOBAL EVENT LISTENERS --- */
+        window.addEventListener('click', initAutoplay, { once: true });
+        window.addEventListener('keydown', initAutoplay, { once: true });
+        window.addEventListener('touchstart', initAutoplay, { once: true });
+
+        document.addEventListener('keydown', (e) => {
+            const activeElem = document.activeElement;
+            const isInputFocused = activeElem && (activeElem.tagName === 'INPUT' || activeElem.tagName === 'TEXTAREA');
+            if (e.key === '/' && !isInputFocused) { e.preventDefault(); toggleChatWindow(); }
+            if (e.key === 'Enter' && isInputFocused && activeElem.id === 'chat-input') { e.preventDefault(); handleSendAction(); }
+        });
+
+        document.getElementById("chat-log").addEventListener("click", function(e) {
+    const target = e.target.closest("a");
+    if (target) {
+        // Jika tautan memiliki target="_blank", biarkan terbuka di tab baru (jangan dicegat)
+        if (target.getAttribute("target") === "_blank") {
+            return;
+        }
+
+        // Untuk tautan biasa (seperti link dari balasan AI), buka di side-tab
+        e.preventDefault();
+        openInSideTab(target.href);
+    }
+});
+
+        // --- WEB SPEECH API (VOICE TO TEXT) ---
+        const btnMic = document.getElementById('btn-mic');
+        const chatInput = document.getElementById('chat-input');
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+        if (SpeechRecognition && btnMic) {
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'id-ID';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            btnMic.addEventListener('click', () => {
+                try {
+                    recognition.start();
+                    btnMic.style.color = '#ef4444';
+                } catch (err) {
+                    recognition.stop();
+                }
+            });
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                chatInput.value = transcript;
+                btnMic.style.color = '#64748B';
+
+                handleSendAction();
+            };
+
+            recognition.onerror = () => {
+                btnMic.style.color = '#64748B';
+            };
+
+            recognition.onend = () => {
+                btnMic.style.color = '#64748B';
+            };
+        } else if (btnMic) {
+            btnMic.style.display = 'none';
+        }
+
+        window.addEventListener('DOMContentLoaded', async () => {
+    const savedTheme = localStorage.getItem('user_app_theme');
+    if (savedTheme) {
+        changeTheme(savedTheme);
+    }
+
+    // Set tampilan awal tombol voice menjadi OFF
+    const btnVoice = document.getElementById('btn-voice');
+    if (btnVoice) {
+        btnVoice.innerHTML = '🔊';
+        btnVoice.title = 'Voice AI (On)';
+        btnVoice.classList.add('active');
+    }
+
+    initEmojiPicker();
+    await fetchCharacterInfoWithAI(currentName);
+    updateUI();
+    setInterval(updateClock, 1000);
+});
+
+let currentAudioLang = "auto";
+
+function changeAudioLanguage(val) {
+    currentAudioLang = val;
+}
+
+        let isVoiceEnabled = true;
+
+// Helper untuk memastikan daftar Voice OS/Browser siap
+function getSystemVoices() {
+    return new Promise((resolve) => {
+        let voices = window.speechSynthesis.getVoices();
+        if (voices.length > 0) {
+            resolve(voices);
+        } else {
+            window.speechSynthesis.onvoiceschanged = () => {
+                resolve(window.speechSynthesis.getVoices());
+            };
+        }
+    });
+}
+
+// Toggle status voice ON/OFF
+function toggleVoice() {
+    isVoiceEnabled = !isVoiceEnabled;
+    const btnVoice = document.getElementById('btn-voice');
+
+    if (btnVoice) {
+        if (isVoiceEnabled) {
+            btnVoice.innerHTML = '🔊';
+            btnVoice.title = 'Voice AI (On)';
+            btnVoice.classList.add('active');
+        } else {
+            btnVoice.innerHTML = '🔇';
+            btnVoice.title = 'Voice AI (Off)';
+            btnVoice.classList.remove('active');
+            
+            // Hentikan suara yang sedang berjalan jika dimatikan
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+        }
+    }
+}
+
+// Fungsi Utama Pemutar Audio (Tunggal & Validasi Lengkap)
+async function speakText(textUI) {
+    // 1. Pengecekan utama: Status tombol, isi teks, dan dukungan browser
+    if (!isVoiceEnabled || !textUI || !('speechSynthesis' in window)) return;
+
+    // 2. Hentikan suara yang sedang berjalan sebelumnya
+    window.speechSynthesis.cancel();
+
+    const activeUILang = (typeof currentLang !== 'undefined') ? currentLang : 'id';
+    const targetAudioLang = (typeof currentAudioLang !== 'undefined' && currentAudioLang !== 'auto') 
+        ? currentAudioLang 
+        : activeUILang;
+
+    // 3. Bersihkan emoji & tag HTML dari teks
+    let cleanText = textUI
+        .replace(/<[^>]*>?/gm, '')
+        .replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '')
+        .trim();
+
+    if (!cleanText) return;
+
+    // 4. Buat objek SpeechSynthesisUtterance
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+
+    const langMap = { 
+        'ja': 'ja-JP', 
+        'en': 'en-US', 
+        'id': 'id-ID', 
+        'zh': 'zh-CN', 
+        'es': 'es-ES' 
+    };
+
+    const targetLocale = langMap[targetAudioLang] || 'id-ID';
+    utterance.lang = targetLocale;
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+
+    // 5. Ambil voice bawaan perangkat secara asynchronous
+    const voices = await getSystemVoices();
+    if (voices.length > 0) {
+        const matchedVoice = voices.find(v => 
+            v.lang.replace('_', '-').toLowerCase().startsWith(targetAudioLang.toLowerCase()) ||
+            v.lang.replace('_', '-').toLowerCase().startsWith(targetLocale.toLowerCase())
+        );
+        if (matchedVoice) {
+            utterance.voice = matchedVoice;
+        }
+    }
+
+    // 6. Eksekusi pemutaran suara
+    window.speechSynthesis.speak(utterance);
+}
+function compressImage(file, maxWidth = 800, maxHeight = 800, quality = 0.7) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > maxWidth) {
+                        height = Math.round((height * maxWidth) / width);
+                        width = maxWidth;
+                    }
+                } else {
+                    if (height > maxHeight) {
+                        width = Math.round((width * maxHeight) / height);
+                        height = maxHeight;
+                    }
+                }
+
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                resolve(canvas.toDataURL('image/jpeg', quality));
+            };
+            img.onerror = (err) => reject(err);
+        };
+        reader.onerror = (err) => reject(err);
+    });
+}
+// Array berisi beberapa banner iklan (ukuran gambar sama)
+const promoBanners = [
+    {
+        title: { id: "🎮 Rekomendasi Game Hari Ini", en: "🎮 Daily Game Recommendation", ja: "🎮 本日の dim o 勧めゲーム", zh: "🎮 今日游戏推荐", es: "🎮 Recomendación del Día" },
+        gameName: "To be Special!",
+        description: { 
+            id: "Petualangan party seru bersama teman-teman!", 
+            en: "Fun party adventure with friends!", 
+            ja: " 友達と一緒に楽しいパーティーアドベンチャー！", 
+            zh: "与朋友一起的多人派对冒险！", 
+            es: "¡Divertida aventura de fiesta con amigos!" 
+        },
+        imageUrl: "assets/banner-game-1.png",
+        itchUrl: "https://beruang-tidur.itch.io/to-be-special-party-with-friends",
+        btnText: { id: "▶ Mainkan di itch.io", en: "▶ Play on itch.io", ja: "▶ itch.io でプレイ", zh: "▶ 在 itch.io 上游玩", es: "▶ Jugar en itch.io" }
+    },
+    {
+        title: { id: "🐱 Game Pixel Hari Ini", en: "🐱 Today's Pixel Game", ja: "🐱 本日のピクセルゲーム", zh: "🐱 今日像素游戏", es: "🐱 Juego Pixel del Día" },
+        gameName: "Purr-haps Next Time",
+        description: { 
+            id: "Petualangan kucing imut yang penuh misteri.", 
+            en: "Cute cat adventure filled with mystery.", 
+            ja: " 謎に満ちたかわいい猫の冒険。", 
+            zh: "充满神秘的可爱小猫冒险。", 
+            es: "Una linda aventura gatuna llena de misterio." 
+        },
+        imageUrl: "assets/banner-game-2.png",
+        itchUrl: "https://beruang-tidur.itch.io/purr-haps-next-time",
+        btnText: { id: "▶ Mainkan di itch.io", en: "▶ Play on itch.io", ja: "▶ itch.io でプレイ", zh: "▶ 在 itch.io 上游玩", es: "▶ Jugar en itch.io" }
+    },
+    {
+        title: { id: "🎨 Komisi Pixel Art & Design", en: "🎨 Pixel Art & Design Commission", ja: "🎨 ピクセルアートコミッション", zh: "🎨 像素艺术约稿", es: "🎨 Comisiones de Pixel Art" },
+        gameName: "VGen Portfolio",
+        description: { 
+            id: "Buka komisi ilustrasi & aset pixel art buatan Billy Bones.", 
+            en: "Open for pixel art assets & illustration commissions by Billy Bones.", 
+            ja: "Billy Bones によるピクセルアートとイラストの有償依頼受付中。", 
+            zh: "Billy Bones 像素艺术与插画约稿开放中。", 
+            es: "Comisiones de arte pixel e ilustraciones abiertas por Billy Bones." 
+        },
+        imageUrl: "assets/banner-vgen.png",
+        itchUrl: "https://vgen.co/billy_bones999",
+        btnText: { id: "▶ Lihat di VGen", en: "▶ View on VGen", ja: "▶ VGen で見る", zh: "▶ 在 VGen 上查看", es: "▶ Ver en VGen" }
+    }
+];
+
+function injectGamePromoToChat() {
+    const log = document.getElementById('chat-log');
+    if (!log) return;
+
+    const randomIndex = Math.floor(Math.random() * promoBanners.length);
+    const item = promoBanners[randomIndex];
+
+    const lang = (typeof currentLang !== 'undefined' && item.title[currentLang]) ? currentLang : 'id';
+    const msg = document.createElement('div');
+    msg.className = 'msg ai';
+    const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    // DETEKSI WARNA TจับOMBOL (Cek apakah promo bertipe vgen atau mengandung link vgen)
+    const isVgen = item.type === 'vgen' || (item.itchUrl && item.itchUrl.includes('vgen.co'));
+    const btnBg = isVgen ? '#A6F00F' : '#fa5c5c';
+    const btnTextColor = isVgen ? '#121212' : '#ffffff';
+
+    msg.innerHTML = `
+        <div style="font-weight: bold; font-size: 11px; color: #f59e0b; margin-bottom: 4px;">📢 ${item.title[lang]}</div>
+        <p style="margin: 4px 0; font-size: 13px;"><strong>${item.gameName}</strong> - ${item.description[lang]}</p>
+        
+        <a href="${item.itchUrl}" target="_blank" rel="noopener noreferrer" style="display: block; margin-top: 6px; text-decoration: none;">
+            <img src="${item.imageUrl}" alt="${item.gameName}" style="width: 100%; max-width: 320px; border-radius: 8px; border: 1px solid #4b5563; display: block;">
+            <button style="margin-top: 6px; width: 100%; max-width: 320px; background: ${btnBg}; color: ${btnTextColor}; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer;">
+                ${item.btnText[lang]}
+            </button>
+        </a>
+        <div class="time" style="margin-top: 4px; font-size: 10px; opacity: 0.7;">${timeStr}</div>
+    `;
+
+    log.appendChild(msg);
+    log.scrollTop = log.scrollHeight;
+}
+
+// Timer: Munculkan promo setiap 3 menit
+setInterval(() => {
+    injectGamePromoToChat();
+}, 4 * 60 * 1000);
+
+function updateOrientationState() {
+    // Deteksi akurat apakah HP dalam posisi Landscape
+    const isLandscape = window.matchMedia("(orientation: landscape)").matches || Math.abs(window.orientation) === 90;
+    const isMobile = window.innerWidth <= 960 || window.innerHeight <= 600;
+
+    if (isLandscape && isMobile) {
+      document.body.classList.add('mobile-landscape');
+      
+      // Paksa reset scroll window ke titik paling atas (0,0) untuk menghilangkan celah atas/bawah
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+
+      // Kunci tinggi spesifik jika visualViewport tersedia
+      if (window.visualViewport) {
+        const vh = window.visualViewport.height;
+        const appContainer = document.querySelector('.app-container');
+        const sideTab = document.querySelector('.side-tab');
+        
+        if (appContainer) appContainer.style.height = `${vh}px`;
+        if (sideTab) sideTab.style.height = `${vh}px`;
+      }
+    } else {
+      document.body.classList.remove('mobile-landscape');
+      
+      const appContainer = document.querySelector('.app-container');
+      const sideTab = document.querySelector('.side-tab');
+      if (appContainer) appContainer.style.height = '';
+      if (sideTab) sideTab.style.height = '';
+    }
+  }
+
+  // Event Listeners Komprehensif
+  window.addEventListener('resize', updateOrientationState);
+  window.addEventListener('orientationchange', () => {
+    // Delay 150ms mengatasi bug render delay saat rotasi HP di Chrome
+    setTimeout(updateOrientationState, 150);
+  });
+
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', updateOrientationState);
+    window.visualViewport.addEventListener('scroll', () => {
+      if (document.body.classList.contains('mobile-landscape')) {
+        window.scrollTo(0, 0);
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    // Set volume audio awal ke 40% (0.4)
+    changeCozyVolume(0.4);
+
+    // Pastikan slider (range input) di UI juga ikut ke posisi 40%
+    const volumeSlider = document.getElementById('cozy-volume-slider'); // Sesuaikan ID slider Anda
+    if (volumeSlider) {
+        volumeSlider.value = 0.4;
+    }
+});
+
+
+// Buka/Tutup menu burger
+function toggleMobileMenu() {
+    const wrapper = document.getElementById('action-buttons');
+    wrapper.classList.toggle('active');
+}
+
+// Menutup menu otomatis jika pengguna mengklik di luar menu
+document.addEventListener('click', function(event) {
+    const wrapper = document.getElementById('action-buttons');
+    const burgerBtn = document.getElementById('btn-burger');
+
+    if (wrapper && burgerBtn) {
+        if (!wrapper.contains(event.target) && !burgerBtn.contains(event.target)) {
+            wrapper.classList.remove('active');
+        }
+    }
+});
+
+// Menutup menu saat salah satu tombol aksi diklik di HP
+document.querySelectorAll('.action-buttons-wrapper .btn-icon').forEach(button => {
+    button.addEventListener('click', () => {
+        const wrapper = document.getElementById('action-buttons');
+        if (wrapper) {
+            wrapper.classList.remove('active');
+        }
+    });
+});
+    </script>
+</body>
+</html>
