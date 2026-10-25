@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /admin/        # Melarang Google masuk ke folder admin (jika ada)
+Disallow: /api/          # Melarang Google mengindeks file backend/API Anda
+
+Sitemap: https://beruang-chat.vercel.app/sitemap.xml
